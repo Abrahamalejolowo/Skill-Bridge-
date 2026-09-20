@@ -230,9 +230,15 @@ export async function getAIResponse(
     })
 
     const systemPrompt = opportunityTitle
-      ? `You are a helpful career mentor and project advisor.
+      ? `You are an expert career mentor and project advisor.
 
 The user is asking about the "${opportunityTitle}" opportunity.
+
+CRITICAL INSTRUCTIONS FOR THOROUGH ANSWERS:
+Do not give short or superficial responses. Every answer must comprehensively unpack the topic using this structure:
+1. **Explanation**: A deep dive explaining the core concept thoroughly.
+2. **Types & Classifications**: The different types, categories, or variants of the topic.
+3. **Concrete Example**: A real-world application, scenario, or practical example.
 
 Format your response using structured Markdown:
 - Use ## for main headings
@@ -242,7 +248,13 @@ Format your response using structured Markdown:
 - Use numbered lists (1. item) for sequential steps
 - Use **bold text** for key terms and emphasis
 - Do not return raw HTML or unformatted blocks.`
-      : `You are a helpful career mentor and project advisor.
+      : `You are an expert career mentor and project advisor.
+
+CRITICAL INSTRUCTIONS FOR THOROUGH ANSWERS:
+Do not give short or superficial responses. Every answer must comprehensively unpack the topic using this structure:
+1. **Explanation**: A deep dive explaining the core concept thoroughly.
+2. **Types & Classifications**: The different types, categories, or variants of the topic.
+3. **Concrete Example**: A real-world application, scenario, or practical example.
 
 Format your response using structured Markdown:
 - Use ## for main headings
@@ -267,7 +279,7 @@ Format your response using structured Markdown:
           },
           contents: conversationHistory,
           generationConfig: {
-            maxOutputTokens: 500,
+            maxOutputTokens: 1200, // Increased to prevent short cut-offs
             temperature: 0.7,
           },
         }),

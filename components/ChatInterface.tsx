@@ -1,10 +1,19 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Send, Bot, User, Loader2 } from 'lucide-react'
+import { Send, Bot, User, Loader2, CheckCircle2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { saveChatMessage, getAIResponse } from '@/app/actions/chat'
+
+const STREAMING_STEPS = [
+  "Task Input",
+  "Understand Goal",
+  "Synthesize Plan",
+  "Execute Actions",
+  "Verify Output Integrity",
+  "Report",
+]
 
 interface Message {
   id?: string
@@ -27,6 +36,7 @@ export default function ChatInterface({
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -35,7 +45,28 @@ export default function ChatInterface({
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages, isLoading])
+  }, [messages, isLoading, currentStepIndex])
+
+  // Handle step progression animation while loading
+  useEffect(() => {
+    if (!isLoading) {
+      setCurrentStepIndex(0)
+      return
+    }
+
+    // Cycle through steps smoothly every 500ms
+    const interval = setInterval(() => {
+      setCurrentStepIndex((prev) => {
+        if (prev < STREAMING_STEPS.length - 1) {
+          return prev + 1
+        }
+        // Loop or stay on the last verification step until response returns
+        return prev
+      })
+    }, 500)
+
+    return () => clearInterval(interval)
+  }, [isLoading])
 
   // Automatically trigger AI response on initial session creation if no assistant reply exists yet
   useEffect(() => {
@@ -193,15 +224,48 @@ export default function ChatInterface({
           )
         })}
 
-        {/* Loading Indicator */}
+        {/* Stepped Loading Indicator */}
         {isLoading && (
-          <div className="flex items-start gap-3.5 mr-auto max-w-3xl">
+          <div className="flex items-start gap-3.5 mr-auto max-w-sm w-full">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EAEAE2] text-[#4B7355]">
               <Bot className="h-4 w-4" />
             </div>
-            <div className="rounded-2xl rounded-tl-none bg-[#F5F5F0] border border-[#EAEAE2] px-5 py-3.5 text-sm font-medium text-[#666] flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin text-[#4B7355]" />
-              Thinking...
+            <div className="rounded-2xl rounded-tl-none bg-[#F5F5F0] border border-[#EAEAE2] p-4 w-full space-y-2.5 shadow-sm">
+              {STREAMING_STEPS.map((step, index) => {
+                const isComplete = index < currentStepIndex
+                const isCurrent = index === currentStepIndex
+                const isPending = index > currentStepIndex
+
+                return (
+                  <div
+                    key={step}
+                    className={`flex items-center gap-2.5 text-xs transition-opacity duration-300 ${
+                      isPending ? 'opacity-30' : 'opacity-100'
+                    }`}
+                  >
+                    <div>
+                      {isComplete ? (
+                        <CheckCircle2 className="h-4 w-4 text-[#4B7355]" />
+                      ) : isCurrent ? (
+                        <Loader2 className="h-4 w-4 text-[#4B7355] animate-spin" />
+                      ) : (
+                        <div className="h-4 w-4 rounded-full border border-gray-300" />
+                      )}
+                    </div>
+                    <span
+                      className={`font-semibold ${
+                        isCurrent
+                          ? 'text-[#4B7355]'
+                          : isComplete
+                          ? 'text-[#1A1A1A]'
+                          : 'text-[#888]'
+                      }`}
+                    >
+                      {step}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
