@@ -1,13 +1,13 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import web from "@/public/web.jpeg"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const authError = searchParams.get('error')
@@ -33,7 +33,6 @@ export default function LoginPage() {
       const supabase = createClient()
 
       addLog('🔐 Initiating OAuth with Google...')
-      console.log('Current origin:', typeof window !== 'undefined' ? window.location.origin : 'N/A')
 
       const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -48,56 +47,49 @@ export default function LoginPage() {
 
       if (oauthError) {
         addLog(` OAuth Error: ${oauthError.message}`)
-        console.error('OAuth Error Details:', oauthError)
         setError(`OAuth Error: ${oauthError.message}`)
         setPending(false)
       } else {
         addLog(' OAuth initiated, redirecting to Google...')
-        addLog(` Data: ${JSON.stringify(data)}`)
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err)
       addLog(` Catch Error: ${errorMsg}`)
-      console.error('Login error:', err)
       setError(`Error: ${errorMsg}`)
       setPending(false)
     }
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-  event.preventDefault()
-  setPending(true)
-  setError('')
+    event.preventDefault()
+    setPending(true)
+    setError('')
 
-  try {
-    const supabase = createClient()
-    
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const supabase = createClient()
+      
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (signInError) {
-      setError(signInError.message)
+      if (signInError) {
+        setError(signInError.message)
+        setPending(false)
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 500))
+        window.location.href = '/dashboard'
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err)
+      setError(errorMsg)
       setPending(false)
-    } else {
-      // Simple redirect after login
-      await new Promise(resolve => setTimeout(resolve, 500))
-      window.location.href = '/dashboard'
     }
-  } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : String(err)
-    setError(errorMsg)
-    setPending(false)
   }
-}
-  
 
   return (
     <main className="min-h-screen bg-[#FAF8F5] text-slate-800 flex flex-col lg:flex-row">
-      {/* Left Form Section */}
       <div className="w-full lg:w-1/2 min-h-screen flex flex-col items-center justify-between p-8">
-        {/* Navigation Pill Switcher */}
         <div className="bg-[#F0EBE1] p-1 rounded-full flex text-xs font-medium shadow-inner">
           <Link
             href="/sign-up"
@@ -110,7 +102,6 @@ export default function LoginPage() {
           </span>
         </div>
 
-        {/* Center Form Area */}
         <div className="w-full max-w-sm space-y-6 my-auto">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold text-slate-900">Welcome Back!</h1>
@@ -119,7 +110,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* OAuth Google Button */}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -196,7 +186,6 @@ export default function LoginPage() {
           </form>
         </div>
 
-        {/* Debug Logs */}
         {debugLog.length > 0 && (
           <div className="w-full max-w-sm mt-8 p-4 bg-slate-100 rounded-lg border border-slate-300">
             <p className="text-xs font-bold text-slate-900 mb-2">Debug Logs:</p>
@@ -209,7 +198,6 @@ export default function LoginPage() {
         )}
       </div>
 
-      {/* Right Side Image Banner */}
       <div className="hidden lg:block w-1/2 relative min-h-screen">
         <Image
           src={web}
@@ -220,5 +208,13 @@ export default function LoginPage() {
         />
       </div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center text-xs text-slate-500">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   )
 }
