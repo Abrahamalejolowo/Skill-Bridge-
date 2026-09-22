@@ -173,6 +173,47 @@ export async function saveChatMessage(
   return { success: true }
 }
 
+// Retry helper with exponential backoff
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  maxRetries: number = 3
+): Promise<Response> {
+  let lastError: Error | null = null
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options)
+
+      // Retry on 429 (rate limit) or 503 (service unavailable)
+      if (response.status === 429 || response.status === 503) {
+        if (attempt < maxRetries - 1) {
+          const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 1000
+          console.log(
+            `Rate limited. Retrying after ${waitTime}ms (attempt ${attempt + 1}/${maxRetries})`
+          )
+          await new Promise((resolve) => setTimeout(resolve, waitTime))
+          continue
+        }
+      }
+
+      return response
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error))
+
+      if (attempt < maxRetries - 1) {
+        const waitTime = Math.pow(2, attempt) * 500
+        console.log(
+          `Request failed. Retrying after ${waitTime}ms (attempt ${attempt + 1}/${maxRetries})`
+        )
+        await new Promise((resolve) => setTimeout(resolve, waitTime))
+      }
+    }
+  }
+
+  throw lastError || new Error('Max retries exceeded')
+}
+
 export async function getAIResponse(
   userMessage: string,
   chatId: string,
@@ -265,7 +306,8 @@ Format your response using structured Markdown:
 - Use **bold text** for key terms and emphasis
 - Do not return raw HTML or unformatted blocks.`
 
-    const response = await fetch(
+    // Use retry logic for API call
+    const response = await fetchWithRetry(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
       {
         method: 'POST',
@@ -279,7 +321,7 @@ Format your response using structured Markdown:
           },
           contents: conversationHistory,
           generationConfig: {
-            maxOutputTokens: 1200, // Increased to prevent short cut-offs
+            maxOutputTokens: 2048,
             temperature: 0.7,
           },
         }),
@@ -299,8 +341,13 @@ Format your response using structured Markdown:
         errorMessage = responseText || errorMessage
       }
 
+      console.error('Gemini API error:', {
+        status: response.status,
+        message: errorMessage,
+      })
+
       return {
-        error: `Gemini error: ${errorMessage}`,
+        error: `AI service error: ${errorMessage}. Please try again.`,
       }
     }
 
@@ -314,7 +361,7 @@ Format your response using structured Markdown:
 
     if (!aiMessage) {
       return {
-        error: 'Gemini returned an empty response.',
+        error: 'No response received from AI. Please try again.',
       }
     }
 
@@ -351,7 +398,7 @@ Format your response using structured Markdown:
       error:
         error instanceof Error
           ? error.message
-          : 'Something went wrong while contacting the AI.',
+          : 'Something went wrong while contacting the AI. Please try again.',
     }
   }
 }

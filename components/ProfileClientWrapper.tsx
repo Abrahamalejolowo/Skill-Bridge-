@@ -163,12 +163,14 @@ export default function ProfileClientWrapper({ initialProfile, userEmail, applic
       </aside>
 
       {/* Main Layout Area */}
-      <div className="flex-1 w-full lg:pl-64 flex flex-col min-h-screen overflow-x-hidden">
-        <div className="block lg:hidden sticky top-0 z-40">
+      <div className="flex-1 w-full lg:pl-64 flex flex-col min-h-screen ">
+        {/* Fixed Mobile Header */}
+        <div className=" lg:hidden fixed top-0 left-0 right-0 z-40 ">
           <MobileHeader initials={initials} />
         </div>
 
-        <main className="mx-auto w-full max-w-5xl px-4 sm:px-8 lg:px-10 pt-6 sm:pt-10 pb-12 flex-1">
+        {/* Main Content (added pt-16 or pt-20 on mobile to clear the fixed header) */}
+        <main className="mx-auto w-full max-w-5xl px-4 sm:px-8 lg:px-10 pt-20 lg:pt-10 pb-12 flex-1">
           <section>
             <h1 className="font-serif text-2xl sm:text-3xl font-semibold">My Profile</h1>
             <p className="mt-1 text-xs sm:text-sm text-[#777]">

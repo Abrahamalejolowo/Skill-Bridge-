@@ -23,6 +23,8 @@ function LoginForm() {
     setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`])
   }
 
+  const getOrigin = () => (typeof window !== 'undefined' ? window.location.origin : '')
+
   async function handleGoogleLogin() {
     try {
       addLog('🔵 Google login clicked')
@@ -37,7 +39,7 @@ function LoginForm() {
       const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${getOrigin()}/auth/callback?next=/onboarding`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -50,7 +52,7 @@ function LoginForm() {
         setError(`OAuth Error: ${oauthError.message}`)
         setPending(false)
       } else {
-        addLog(' OAuth initiated, redirecting to Google...')
+        addLog('✅ OAuth initiated, redirecting to Google...')
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err)
@@ -134,7 +136,7 @@ function LoginForm() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            {pending ? 'Loading...' : 'Continue With Google'}
+            {pending ? 'Redirecting...' : 'Continue With Google'}
           </button>
 
           <form onSubmit={submit} className="space-y-4">

@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { 
   Menu, 
   X, 
@@ -11,15 +13,30 @@ import {
   Map, 
   User, 
   LogOut,
-  MessageCircle
+  MessageCircle,
+  Bell
 } from 'lucide-react'
 
 interface MobileHeaderProps {
   initials?: string
+  showNotificationIcon?: boolean
+  onNotificationClick?: () => void
 }
 
-export default function MobileHeader({ initials = 'AC' }: MobileHeaderProps) {
+export default function MobileHeader({ 
+  initials = 'AC', 
+  showNotificationIcon = true,
+  onNotificationClick 
+}: MobileHeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/sign-in')
+    router.refresh()
+  }
 
   return (
     <>
@@ -29,25 +46,38 @@ export default function MobileHeader({ initials = 'AC' }: MobileHeaderProps) {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsOpen(true)}
-            className="rounded-lg p-1.5 text-[#1A1A1A] hover:bg-[#F5F5EF] transition"
+            className="rounded-lg p-1.5 text-[#1A1A1A] hover:bg-[#F5F5EF] transition cursor-pointer"
             aria-label="Open Navigation Menu"
           >
             <Menu className="h-6 w-6" />
           </button>
 
           <Link href="/dashboard" className="font-serif text-xl font-bold tracking-tight">
-            <span className="text-[#E29D38]">S</span><span className="text-[#4B7355]">b</span>
+            <span className="text-[#E29D38]">Skills</span><span className="text-[#4B7355]">bridge</span>
           </Link>
         </div>
 
-        {/* Right: Profile Avatar Link */}
-        <Link 
-          href="/profile" 
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#4B7355] text-xs font-semibold text-white shadow-sm"
-          aria-label="User Profile"
-        >
-          {initials}
-        </Link>
+        {/* Right: Notifications & Profile Avatar Link */}
+        <div className="flex items-center gap-3">
+          {showNotificationIcon && (
+            <button
+              onClick={onNotificationClick}
+              className="relative rounded-lg p-2 text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A] transition cursor-pointer"
+              aria-label="Open Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#D9534F]" />
+            </button>
+          )}
+
+          <Link 
+            href="/profile" 
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#4B7355] text-xs font-semibold text-white shadow-sm"
+            aria-label="User Profile"
+          >
+            {initials}
+          </Link>
+        </div>
       </header>
 
       {/* Slide-out Mobile Navigation Drawer */}
@@ -74,7 +104,7 @@ export default function MobileHeader({ initials = 'AC' }: MobileHeaderProps) {
 
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="rounded-lg p-1.5 text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A] transition"
+                  className="rounded-lg p-1.5 text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A] transition cursor-pointer"
                   aria-label="Close Menu"
                 >
                   <X className="h-5 w-5" />
@@ -92,15 +122,14 @@ export default function MobileHeader({ initials = 'AC' }: MobileHeaderProps) {
             </div>
 
             <div className="pt-6 border-t border-[#F5F5EF]">
-              <form action="/auth/signout" method="post">
-                <button
-                  type="submit"
-                  className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#666] transition hover:bg-[#F5F5EF] hover:text-[#1A1A1A]"
-                >
-                  <LogOut className="h-5 w-5" />
-                  Log Out
-                </button>
-              </form>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#666] transition hover:bg-[#F5F5EF] hover:text-[#1A1A1A] cursor-pointer"
+              >
+                <LogOut className="h-5 w-5" />
+                Log Out
+              </button>
             </div>
           </div>
         </div>

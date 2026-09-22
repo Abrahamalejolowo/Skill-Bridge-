@@ -203,7 +203,7 @@ export default async function DashboardPage() {
                 Welcome Back, <span className="text-[#C88A2B]">{firstName}.</span>
               </h1>
               <p className="mt-1 text-xs sm:text-sm text-[#777]">
-                You&apos;re Eligible For {eligibleMatches.length} Of {totalTracked} Tracked Opportunities—{deadlinesThisWeekCount} Deadlines Land This Week.
+                You&apos;re Eligible For {eligibleMatches.length} Of {totalTracked} Tracked Opportunities {deadlinesThisWeekCount} Deadlines Land This Week.
               </p>
             </section>
 
@@ -223,7 +223,7 @@ export default async function DashboardPage() {
                   <h2 className="font-serif text-lg sm:text-xl font-semibold">Recommended For You</h2>
                   <Link
                     href="/explore"
-                    className="flex items-center gap-1 text-xs font-semibold text-[#4B7355] hover:underline"
+                    className="flex items-center gap-1 text-xs font-bold text-[#4B7355] hover:text-[#C88A2B]  "
                   >
                     See All <ArrowRight className="h-3 w-3" />
                   </Link>
@@ -270,7 +270,7 @@ export default async function DashboardPage() {
                         </span>
                         <Link
                           href={`/explore/${item.id}`}
-                          className="flex items-center gap-1 text-[#1A1A1A] hover:underline ml-auto"
+                          className="flex items-center gap-1 font-bold text-[#1A1A1A] hover:text-[#C88A2B] ml-auto"
                         >
                           View <ArrowRight className="h-3 w-3" />
                         </Link>
@@ -335,7 +335,7 @@ export default async function DashboardPage() {
                   </div>
                   <Link
                     href="/saved"
-                    className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#4B7355] hover:underline"
+                    className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#4B7355] hover:text-[#C88A2B]"
                   >
                     View All Saved <ArrowRight className="h-3 w-3" />
                   </Link>
@@ -351,7 +351,7 @@ export default async function DashboardPage() {
                   </p>
                   <Link
                     href="/roadmap"
-                    className="mt-5 block w-full rounded-xl bg-[#E29D38] py-3 text-center text-xs font-semibold text-white transition hover:bg-[#D48F2A]"
+                    className="mt-5 block w-full rounded-xl bg-[#E29D38] py-3 text-center text-xs font-bold text-white transition hover:bg-[#D48F2A]"
                   >
                     View Roadmap
                   </Link>

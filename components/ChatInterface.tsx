@@ -47,20 +47,17 @@ export default function ChatInterface({
     scrollToBottom()
   }, [messages, isLoading, currentStepIndex])
 
-  // Handle step progression animation while loading
   useEffect(() => {
     if (!isLoading) {
       setCurrentStepIndex(0)
       return
     }
 
-    // Cycle through steps smoothly every 500ms
     const interval = setInterval(() => {
       setCurrentStepIndex((prev) => {
         if (prev < STREAMING_STEPS.length - 1) {
           return prev + 1
         }
-        // Loop or stay on the last verification step until response returns
         return prev
       })
     }, 500)
@@ -68,7 +65,6 @@ export default function ChatInterface({
     return () => clearInterval(interval)
   }, [isLoading])
 
-  // Automatically trigger AI response on initial session creation if no assistant reply exists yet
   useEffect(() => {
     const triggerInitialAIResponse = async () => {
       const hasAssistantMessage = messages.some((msg) => msg.role === 'assistant')
@@ -168,55 +164,186 @@ export default function ChatInterface({
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden">
       {/* Top Header */}
-      <div className="px-6 py-4 border-b border-[#EAEAE2] bg-white/80 backdrop-blur-md shrink-0 flex items-center justify-between">
-        <div>
-          <h1 className="text-base font-bold text-[#1A1A1A]">
-            {opportunityTitle}
-          </h1>
-          <p className="text-xs text-[#888] font-medium mt-0.5">
-            AI Career Advisor & Project Mentor
-          </p>
-        </div>
+      <div className="px-4 md:px-6 py-3 md:py-4 border-b border-[#E8E8E0] bg-white shrink-0">
+        <h1 className="text-base md:text-lg font-semibold text-[#1A1A1A] truncate">
+          {opportunityTitle}
+        </h1>
+        <p className="text-xs text-[#999] font-normal mt-1">
+          AI Career Advisor & Project Mentor
+        </p>
       </div>
 
       {/* Messages Feed */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-12 py-8 md:py-12 space-y-12 w-full bg-white">
         {messages.map((msg, index) => {
           const isUser = msg.role === 'user'
 
           return (
             <div
               key={msg.id || index}
-              className={`flex items-start gap-3.5 max-w-3xl ${
+              className={`flex gap-4 md:gap-5 max-w-3xl ${
                 isUser ? 'ml-auto flex-row-reverse' : 'mr-auto'
               }`}
             >
               {/* Avatar */}
               <div
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
                   isUser
                     ? 'bg-[#4B7355] text-white'
-                    : 'bg-[#EAEAE2] text-[#4B7355]'
+                    : 'bg-[#E8E8E0] text-[#4B7355]'
                 }`}
               >
-                {isUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                {isUser ? <User className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
               </div>
 
-              {/* Message Bubble */}
-              <div
-                className={`rounded-2xl px-5 py-3.5 text-[15px] font-medium leading-relaxed ${
-                  isUser
-                    ? 'bg-[#4B7355] text-white rounded-tr-none'
-                    : 'bg-[#F5F5F0] text-[#1A1A1A] rounded-tl-none border border-[#EAEAE2]'
-                }`}
-              >
+              {/* Message Content */}
+              <div className="flex-1 max-w-2xl">
                 {isUser ? (
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
-                ) : (
-                  <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-[#1A1A1A] prose-headings:font-bold prose-headings:text-[#1A1A1A] prose-strong:text-[#1A1A1A]">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <div className="bg-[#4B7355] text-white rounded-3xl rounded-tr-none px-5 md:px-6 py-4 md:py-5">
+                    <p className="text-sm md:text-base font-normal leading-relaxed whitespace-pre-wrap break-words">
                       {msg.content}
-                    </ReactMarkdown>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-[#FAFAF8] rounded-3xl rounded-tl-none border border-[#E8E8E0] px-5 md:px-7 py-5 md:py-6">
+                      <style>{`
+                        .message-content h1 {
+                          font-size: 1.5rem;
+                          font-weight: 700;
+                          color: #1A1A1A;
+                          margin: 1.5rem 0 1rem 0;
+                          line-height: 1.3;
+                        }
+
+                        .message-content h1:first-child {
+                          margin-top: 0;
+                        }
+
+                        .message-content h2 {
+                          font-size: 1.2rem;
+                          font-weight: 600;
+                          color: #1A1A1A;
+                          margin: 1.5rem 0 0.8rem 0;
+                          line-height: 1.4;
+                        }
+
+                        .message-content h3 {
+                          font-size: 1rem;
+                          font-weight: 600;
+                          color: #333;
+                          margin: 1rem 0 0.6rem 0;
+                          line-height: 1.4;
+                        }
+
+                        .message-content p {
+                          font-size: 0.95rem;
+                          color: #444;
+                          line-height: 1.7;
+                          margin: 0 0 1.2rem 0;
+                        }
+
+                        .message-content p:last-child {
+                          margin-bottom: 0;
+                        }
+
+                        .message-content ul, 
+                        .message-content ol {
+                          margin: 1.2rem 0;
+                          padding-left: 1.5rem;
+                        }
+
+                        .message-content li {
+                          font-size: 0.95rem;
+                          color: #444;
+                          line-height: 1.8;
+                          margin: 0.6rem 0;
+                        }
+
+                        .message-content strong {
+                          font-weight: 600;
+                          color: #1A1A1A;
+                        }
+
+                        .message-content em {
+                          font-style: italic;
+                          color: #555;
+                        }
+
+                        .message-content blockquote {
+                          border-left: 4px solid #4B7355;
+                          padding-left: 1rem;
+                          margin: 1rem 0;
+                          color: #666;
+                          font-style: italic;
+                        }
+
+                        .message-content code {
+                          background: #F5F5F0;
+                          color: #D9534F;
+                          padding: 0.2rem 0.5rem;
+                          border-radius: 0.3rem;
+                          font-family: 'Monaco', 'Courier New', monospace;
+                          font-size: 0.9rem;
+                        }
+
+                        .message-content pre {
+                          background: #1F1F1F;
+                          color: #E8E8E8;
+                          padding: 1rem;
+                          border-radius: 0.5rem;
+                          overflow-x: auto;
+                          margin: 1.5rem 0;
+                          border: 1px solid #333;
+                          font-size: 0.85rem;
+                          line-height: 1.6;
+                        }
+
+                        .message-content pre code {
+                          background: none;
+                          color: inherit;
+                          padding: 0;
+                        }
+
+                        .message-content table {
+                          width: 100%;
+                          border-collapse: collapse;
+                          margin: 1.5rem 0;
+                          border: 1px solid #E8E8E0;
+                          border-radius: 0.5rem;
+                          overflow: hidden;
+                        }
+
+                        .message-content th {
+                          background: #F0F0E8;
+                          border: 1px solid #E8E8E0;
+                          padding: 0.8rem;
+                          font-weight: 600;
+                          text-align: left;
+                          color: #1A1A1A;
+                          font-size: 0.9rem;
+                        }
+
+                        .message-content td {
+                          border: 1px solid #E8E8E0;
+                          padding: 0.8rem;
+                          color: #333;
+                          font-size: 0.9rem;
+                        }
+
+                        .message-content a {
+                          color: #4B7355;
+                          text-decoration: underline;
+                          font-weight: 500;
+                        }
+                      `}</style>
+                      
+                      <div className="message-content">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -226,46 +353,48 @@ export default function ChatInterface({
 
         {/* Stepped Loading Indicator */}
         {isLoading && (
-          <div className="flex items-start gap-3.5 mr-auto max-w-sm w-full">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EAEAE2] text-[#4B7355]">
-              <Bot className="h-4 w-4" />
+          <div className="flex gap-4 md:gap-5 max-w-2xl">
+            <div className="h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center bg-[#E8E8E0] text-[#4B7355] flex-shrink-0">
+              <Bot className="h-5 w-5" />
             </div>
-            <div className="rounded-2xl rounded-tl-none bg-[#F5F5F0] border border-[#EAEAE2] p-4 w-full space-y-2.5 shadow-sm">
-              {STREAMING_STEPS.map((step, index) => {
-                const isComplete = index < currentStepIndex
-                const isCurrent = index === currentStepIndex
-                const isPending = index > currentStepIndex
+            <div className="bg-[#FAFAF8] border border-[#E8E8E0] rounded-3xl rounded-tl-none px-5 md:px-6 py-5 md:py-6">
+              <div className="space-y-4">
+                {STREAMING_STEPS.map((step, index) => {
+                  const isComplete = index < currentStepIndex
+                  const isCurrent = index === currentStepIndex
+                  const isPending = index > currentStepIndex
 
-                return (
-                  <div
-                    key={step}
-                    className={`flex items-center gap-2.5 text-xs transition-opacity duration-300 ${
-                      isPending ? 'opacity-30' : 'opacity-100'
-                    }`}
-                  >
-                    <div>
-                      {isComplete ? (
-                        <CheckCircle2 className="h-4 w-4 text-[#4B7355]" />
-                      ) : isCurrent ? (
-                        <Loader2 className="h-4 w-4 text-[#4B7355] animate-spin" />
-                      ) : (
-                        <div className="h-4 w-4 rounded-full border border-gray-300" />
-                      )}
-                    </div>
-                    <span
-                      className={`font-semibold ${
-                        isCurrent
-                          ? 'text-[#4B7355]'
-                          : isComplete
-                          ? 'text-[#1A1A1A]'
-                          : 'text-[#888]'
+                  return (
+                    <div
+                      key={step}
+                      className={`flex items-center gap-3 transition-opacity duration-300 ${
+                        isPending ? 'opacity-35' : 'opacity-100'
                       }`}
                     >
-                      {step}
-                    </span>
-                  </div>
-                )
-              })}
+                      <div className="flex-shrink-0">
+                        {isComplete ? (
+                          <CheckCircle2 className="h-5 w-5 text-[#4B7355]" />
+                        ) : isCurrent ? (
+                          <Loader2 className="h-5 w-5 text-[#4B7355] animate-spin" />
+                        ) : (
+                          <div className="h-5 w-5 rounded-full border-2 border-[#D0D0C8]" />
+                        )}
+                      </div>
+                      <span
+                        className={`text-sm font-normal ${
+                          isCurrent
+                            ? 'text-[#4B7355] font-medium'
+                            : isComplete
+                            ? 'text-[#1A1A1A]'
+                            : 'text-[#999]'
+                        }`}
+                      >
+                        {step}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
         )}
@@ -274,25 +403,22 @@ export default function ChatInterface({
       </div>
 
       {/* Message Input Form */}
-      <div className="p-4 border-t border-[#EAEAE2] bg-white shrink-0">
-        <form
-          onSubmit={handleSend}
-          className="flex items-center gap-2 max-w-4xl mx-auto"
-        >
+      <div className="px-4 md:px-12 py-5 border-t border-[#E8E8E0] bg-white shrink-0 w-full">
+        <form onSubmit={handleSend} className="flex items-center gap-3 max-w-3xl mx-auto">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask a question..."
             disabled={isLoading}
-            className="flex-1 rounded-full bg-[#F4F4EE] px-5 py-3 text-[15px] font-medium text-[#1A1A1A] placeholder-[#999] outline-none focus:ring-2 focus:ring-[#4B7355]/30 disabled:opacity-50"
+            className="flex-1 rounded-full bg-[#F5F5F0] px-5 py-3 text-sm md:text-base font-normal text-[#1A1A1A] placeholder-[#999] outline-none border border-[#E8E8E0] focus:border-[#4B7355] focus:ring-2 focus:ring-[#4B7355]/20 disabled:opacity-50 transition"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#4B7355] text-white transition hover:bg-[#3D5E45] disabled:opacity-50 shrink-0"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#4B7355] text-white transition hover:bg-[#3D5E45] disabled:opacity-50 flex-shrink-0"
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-5 w-5" />
           </button>
         </form>
       </div>
