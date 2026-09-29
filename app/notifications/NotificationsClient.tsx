@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react' 
-import React from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Bell, CheckCheck, ArrowLeft } from 'lucide-react'
@@ -15,7 +14,15 @@ interface Notification {
   created_at: string
 }
 
-export default function NotificationsClient({ initialNotifications }: { initialNotifications: Notification[] }) {
+interface NotificationsClientProps {
+  initialNotifications: Notification[]
+  dashboardPath: string
+}
+
+export default function NotificationsClient({
+  initialNotifications,
+  dashboardPath = '/dashboard',
+}: NotificationsClientProps) {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
   const [isUpdating, setIsUpdating] = useState(false)
   const router = useRouter()
@@ -23,7 +30,6 @@ export default function NotificationsClient({ initialNotifications }: { initialN
   const unreadCount = notifications.filter((n) => !n.read_at).length
 
   const markAsRead = async (id: string) => {
-    // Optimistic UI update
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n))
     )
@@ -52,9 +58,12 @@ export default function NotificationsClient({ initialNotifications }: { initialN
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F2] px-5 py-10 text-[#1A1A1A] sm:px-8 font-sans antialiased">
+    <main className="min-h-screen bg-[#FAFAF0] px-5 py-10 text-[#1A1A1A] sm:px-8 font-sans antialiased">
       <div className="mx-auto max-w-3xl">
-        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm font-medium text-[#4B7355] hover:underline">
+        <Link
+          href={dashboardPath}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#4B7355] hover:underline"
+        >
           <ArrowLeft className="h-4 w-4" /> Dashboard
         </Link>
 

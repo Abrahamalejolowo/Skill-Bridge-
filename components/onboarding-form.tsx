@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { saveProfile } from '@/app/actions/profile'
 import { Send, X, Plus } from 'lucide-react'
 
@@ -55,14 +56,17 @@ export function OnboardingForm({ profile }: { profile?: any }) {
   if (isCalculating) {
     return (
       <main className="min-h-screen bg-[#FAF8F5] text-[#1A1A1A] flex flex-col justify-between font-sans relative">
+        <div className="w-full px-8 pt-6 max-w-5xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="SkillBridge Logo" width={110} height={30} priority className="h-9 w-auto object-contain" />
+          </Link>
+          <span className="text-xs text-[#8A8A8E]">Step <strong className="text-[#1A1A1A] font-semibold">2</strong> Of 3</span>
+        </div>
+
         {/* Top Progress Bar */}
-        <div className="w-full px-8 pt-8 max-w-5xl mx-auto">
+        <div className="w-full px-8 pt-4 max-w-5xl mx-auto">
           <div className="w-full bg-[#EAE8E3] h-[3px] relative overflow-hidden rounded-full">
             <div className="bg-[#E5A93B] h-full absolute right-0 w-1/3 transition-all duration-500" />
-          </div>
-          <div className="flex justify-between items-center text-xs text-[#8A8A8E] mt-3 font-normal">
-            <span>Step <strong className="text-[#1A1A1A] font-semibold">2</strong> Of 3</span>
-            <span>Review</span>
           </div>
         </div>
 
@@ -83,14 +87,17 @@ export function OnboardingForm({ profile }: { profile?: any }) {
   if (isComplete) {
     return (
       <main className="min-h-screen bg-[#FAF8F5] text-[#1A1A1A] flex flex-col justify-between font-sans relative">
+        <div className="w-full px-8 pt-6 max-w-5xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="SkillBridge Logo" width={110} height={30} priority className="h-9 w-auto object-contain" />
+          </Link>
+          <span className="text-xs text-[#8A8A8E]">Step <strong className="text-[#1A1A1A] font-semibold">3</strong> Of 3</span>
+        </div>
+
         {/* Top Progress Bar */}
-        <div className="w-full px-8 pt-8 max-w-5xl mx-auto">
+        <div className="w-full px-8 pt-4 max-w-5xl mx-auto">
           <div className="w-full bg-[#EAE8E3] h-[3px] relative overflow-hidden rounded-full">
-            <div className="bg-[#E5A93B] h-full absolute right-0 w-1/3 transition-all duration-500" />
-          </div>
-          <div className="flex justify-between items-center text-xs text-[#8A8A8E] mt-3 font-normal">
-            <span>Step <strong className="text-[#1A1A1A] font-semibold">2</strong> Of 3</span>
-            <span>Review</span>
+            <div className="bg-[#E5A93B] h-full w-full transition-all duration-500" />
           </div>
         </div>
 
@@ -111,7 +118,7 @@ export function OnboardingForm({ profile }: { profile?: any }) {
 
           <Link
             href="/dashboard"
-            className="w-full sm:w-auto px-10 py-3 rounded-lg bg-[#E5A93B] hover:bg-[#D49830] text-white font-medium text-xs transition-all shadow-sm"
+            className="w-full sm:w-auto px-10 py-3 rounded-xl bg-[#E5A93B] hover:bg-[#D49830] text-white font-medium text-xs transition-all shadow-sm"
           >
             Go To My Dashboard
           </Link>
@@ -124,10 +131,18 @@ export function OnboardingForm({ profile }: { profile?: any }) {
 
   // --- STANDARD ONBOARDING FORM ---
   return (
-    <main className="min-h-screen bg-[#FAF8F5] px-5 py-8 text-[#1A1A1A] sm:px-8 lg:px-16 font-sans">
+    <main className="min-h-screen bg-[#FAF8F5] px-5 py-6 text-[#1A1A1A] sm:px-8 lg:px-16 font-sans">
       <div className="mx-auto max-w-4xl">
+        {/* Header Branding */}
+        <div className="flex items-center justify-between pb-6 border-b border-[#EAE8E3]">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="SkillBridge Logo" width={120} height={32} priority className="h-10 w-auto object-contain" />
+          </Link>
+          <span className="text-xs text-[#8A8A8E]">Setup Wizard</span>
+        </div>
+
         {/* Top Progress Bar */}
-        <div className="w-full pt-2">
+        <div className="w-full pt-6">
           <div className="w-full bg-[#EAE8E3] h-[3px] rounded-full overflow-hidden">
             <div className="bg-[#E5A93B] h-full transition-all duration-300" style={{ width: `${(step / 3) * 100}%` }} />
           </div>
@@ -139,10 +154,10 @@ export function OnboardingForm({ profile }: { profile?: any }) {
           </div>
         </div>
 
-        <form action={handleFinalSubmit} className="mx-auto mt-10 max-w-2xl pb-16">
+        <form action={handleFinalSubmit} className="mx-auto mt-8 max-w-2xl pb-16">
           {/* STEP 1: PERSONAL & ACADEMIC BACKGROUND */}
           {step === 1 && (
-            <section className="space-y-8">
+            <section className="space-y-8 animate-in fade-in duration-300">
               <div className="space-y-2">
                 <span className="inline-block px-3 py-1 rounded-full border border-[#E7E2DA] bg-[#F3EFE6]/50 text-[11px] font-medium text-[#737373]">
                   • &nbsp; Personal & Academic
@@ -204,7 +219,7 @@ export function OnboardingForm({ profile }: { profile?: any }) {
 
           {/* STEP 2: SKILLS, BIO & GOALS */}
           {step === 2 && (
-            <section className="space-y-8">
+            <section className="space-y-8 animate-in fade-in duration-300">
               <div className="space-y-2">
                 <span className="inline-block px-3 py-1 rounded-full border border-[#E7E2DA] bg-[#F3EFE6]/50 text-[11px] font-medium text-[#737373]">
                   • &nbsp; Skills & Goals
@@ -230,8 +245,8 @@ export function OnboardingForm({ profile }: { profile?: any }) {
                       onClick={() => toggle(skill, setSelectedSkills)} 
                       className={`px-4 py-2 rounded-full text-xs font-medium border transition-all ${
                         selectedSkills.includes(skill) 
-                          ? 'bg-[#E5A93B] text-white border-[#E5A93B]' 
-                          : 'bg-white border-[#E7E2DA] text-[#737373]'
+                          ? 'bg-[#E5A93B] text-white border-[#E5A93B] shadow-sm' 
+                          : 'bg-white border-[#E7E2DA] text-[#737373] hover:border-[#D5D0C5]'
                       }`}
                     >
                       {skill}
@@ -243,7 +258,7 @@ export function OnboardingForm({ profile }: { profile?: any }) {
                   {selectedSkills.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#F3EFE6] px-3 py-1 text-xs font-medium text-[#1A1A1A] border border-[#E7E2DA]"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#F3EFE6] px-3 py-1.5 text-xs font-medium text-[#1A1A1A] border border-[#E7E2DA]"
                     >
                       {skill}
                       <button type="button" onClick={() => removeSkill(skill)} className="text-[#737373] hover:text-red-600 transition">
@@ -261,7 +276,7 @@ export function OnboardingForm({ profile }: { profile?: any }) {
                     placeholder="Add skill not listed" 
                     className="w-full h-11 px-4 rounded-xl border border-[#E7E2DA] bg-white focus:outline-none focus:ring-2 focus:ring-[#E5A93B] text-xs text-[#1A1A1A]"
                   />
-                  <button type="button" onClick={addSkill} className="px-6 h-11 rounded-xl bg-white border border-[#E7E2DA] text-xs font-semibold text-[#1A1A1A] flex items-center gap-1">
+                  <button type="button" onClick={addSkill} className="px-6 h-11 rounded-xl bg-white border border-[#E7E2DA] text-xs font-semibold text-[#1A1A1A] flex items-center gap-1 hover:bg-[#F9F8F6] transition">
                     <Plus className="w-3.5 h-3.5" /> Add
                   </button>
                 </div>
@@ -277,8 +292,8 @@ export function OnboardingForm({ profile }: { profile?: any }) {
                       onClick={() => toggle(item, setSelectedInterests)} 
                       className={`px-4 py-2 rounded-full text-xs font-medium border transition-all ${
                         selectedInterests.includes(item) 
-                          ? 'bg-[#E5A93B] text-white border-[#E5A93B]' 
-                          : 'bg-white border-[#E7E2DA] text-[#737373]'
+                          ? 'bg-[#E5A93B] text-white border-[#E5A93B] shadow-sm' 
+                          : 'bg-white border-[#E7E2DA] text-[#737373] hover:border-[#D5D0C5]'
                       }`}
                     >
                       {item}
@@ -297,7 +312,7 @@ export function OnboardingForm({ profile }: { profile?: any }) {
 
           {/* STEP 3: REVIEW & SUBMIT */}
           {step === 3 && (
-            <section className="space-y-6">
+            <section className="space-y-6 animate-in fade-in duration-300">
               <div>
                 <span className="inline-block px-3 py-1 rounded-full border border-[#E7E2DA] bg-[#F3EFE6]/50 text-[11px] font-medium text-[#737373] mb-3">
                   • &nbsp; Review
@@ -305,7 +320,7 @@ export function OnboardingForm({ profile }: { profile?: any }) {
                 <h1 className="font-serif text-3xl font-bold text-[#1A1A1A]">Here&apos;s What We&apos;ll Use To Match You.</h1>
               </div>
 
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4 p-6 bg-white rounded-2xl border border-[#E7E2DA] text-xs">
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4 p-6 bg-white rounded-2xl border border-[#E7E2DA] text-xs shadow-sm">
                 <div>
                   <span className="text-[#737373] font-medium">Full Name</span>
                   <p className="font-semibold text-[#1A1A1A] mt-0.5">{`${firstName} ${lastName}`.trim() || '—'}</p>
@@ -352,7 +367,7 @@ export function OnboardingForm({ profile }: { profile?: any }) {
               <button 
                 type="button" 
                 onClick={() => setStep(step - 1)} 
-                className="text-xs font-semibold text-[#1A1A1A] flex items-center gap-1"
+                className="text-xs font-semibold text-[#1A1A1A] flex items-center gap-1 px-4 py-2 hover:bg-[#EFECE6] rounded-lg transition"
               >
                 ← Back
               </button>
@@ -362,14 +377,14 @@ export function OnboardingForm({ profile }: { profile?: any }) {
               <button 
                 type="button" 
                 onClick={() => setStep(step + 1)} 
-                className="px-8 py-2.5 rounded-xl bg-[#E5A93B] hover:bg-[#D49830] text-white font-medium text-xs transition-all shadow-sm"
+                className="px-8 py-3 rounded-xl bg-[#E5A93B] hover:bg-[#D49830] text-white font-medium text-xs transition-all shadow-sm"
               >
                 Continue
               </button>
             ) : (
               <button 
                 type="submit" 
-                className="px-8 py-2.5 rounded-xl bg-[#E5A93B] hover:bg-[#D49830] text-white font-medium text-xs transition-all shadow-sm"
+                className="px-8 py-3 rounded-xl bg-[#E5A93B] hover:bg-[#D49830] text-white font-medium text-xs transition-all shadow-sm"
               >
                 Calculate My Matches
               </button>

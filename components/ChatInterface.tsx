@@ -5,6 +5,7 @@ import { Send, Bot, User, Loader2, CheckCircle2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { saveChatMessage, getAIResponse } from '@/app/actions/chat'
+import PremiumUpsell from '@/components/PremiumUpsell'
 
 const STREAMING_STEPS = [
   "Task Input",
@@ -37,6 +38,7 @@ export default function ChatInterface({
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
+  const [premiumRequired, setPremiumRequired] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -77,12 +79,14 @@ export default function ChatInterface({
           const userMessage = messages[0].content
           const response = await getAIResponse(userMessage, chatId, opportunityTitle)
 
-          if (response.error) {
+          if (response.premiumRequired) {
+            setPremiumRequired(true)
+          } else if (response.error) {
             setMessages((prev) => [
               ...prev,
               {
                 role: 'assistant',
-                content: `**Error:** ${response.error}`,
+                content: `**Error:** ${response.error ?? 'Unknown error'}`,
               },
             ])
           } else if (response.message) {
@@ -90,7 +94,7 @@ export default function ChatInterface({
               ...prev,
               {
                 role: 'assistant',
-                content: response.message,
+                content: response.message ?? '',
               },
             ])
           }
@@ -114,7 +118,7 @@ export default function ChatInterface({
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!input.trim() || isLoading) return
+    if (!input.trim() || isLoading || premiumRequired) return
 
     const userMessage = input.trim()
     setInput('')
@@ -130,12 +134,14 @@ export default function ChatInterface({
       await saveChatMessage(userMessage, 'user', chatId)
       const response = await getAIResponse(userMessage, chatId, opportunityTitle)
 
-      if (response.error) {
+      if (response.premiumRequired) {
+        setPremiumRequired(true)
+      } else if (response.error) {
         setMessages([
           ...newMessages,
           {
             role: 'assistant',
-            content: `**Error:** ${response.error}`,
+            content: `**Error:** ${response.error ?? 'Unknown error'}`,
           },
         ])
       } else if (response.message) {
@@ -143,7 +149,7 @@ export default function ChatInterface({
           ...newMessages,
           {
             role: 'assistant',
-            content: response.message,
+            content: response.message ?? '',
           },
         ])
       }
@@ -399,6 +405,13 @@ export default function ChatInterface({
           </div>
         )}
 
+        {/* Premium Gate */}
+        {premiumRequired && (
+          <div className="max-w-lg mx-auto">
+            <PremiumUpsell />
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -409,13 +422,13 @@ export default function ChatInterface({
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question..."
-            disabled={isLoading}
+            placeholder={premiumRequired ? 'Upgrade to Premium to continue chatting' : 'Ask a question...'}
+            disabled={isLoading || premiumRequired}
             className="flex-1 rounded-full bg-[#F5F5F0] px-5 py-3 text-sm md:text-base font-normal text-[#1A1A1A] placeholder-[#999] outline-none border border-[#E8E8E0] focus:border-[#4B7355] focus:ring-2 focus:ring-[#4B7355]/20 disabled:opacity-50 transition"
           />
           <button
             type="submit"
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || premiumRequired || !input.trim()}
             className="flex h-11 w-11 items-center justify-center rounded-full bg-[#4B7355] text-white transition hover:bg-[#3D5E45] disabled:opacity-50 flex-shrink-0"
           >
             <Send className="h-5 w-5" />

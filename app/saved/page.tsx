@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { updateApplication, removeApplication } from '@/app/actions/profile'
@@ -16,6 +17,7 @@ import {
   Trash2,
   LucideIcon,
   MessageCircle,
+  Sparkles
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -126,20 +128,36 @@ export default async function SavedPage({
   })
 
   return (
-    <div className="flex min-h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased overflow-x-hidden">
+    <div className="flex min-h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-x-hidden">
       {/* Desktop Left Sidebar Navigation */}
       <aside className="fixed bottom-0 top-0 left-0 hidden lg:flex w-64 flex-col justify-between border-r border-[#EAEAE2] bg-white px-6 py-8 z-30">
         <div>
-          <Link href="/" className="font-serif text-2xl font-bold text-[#4B7355]">
-            Skills<span className="text-[#E29D38]">bridge</span>
-          </Link>
+          <Link href="/" className="flex items-center gap-2">
+                      <Image
+                        src="/logo.png"
+                        alt="SkillBridge Logo"
+                        width={130}
+                        height={35}
+                        priority
+                        className="h-12 w-auto object-contain"
+                      />
+                    </Link>
 
           <nav className="mt-12 space-y-2">
             <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Dashboard" />
             <SidebarLink href="/explore" icon={Compass} label="Explore" />
             <SidebarLink href="/saved" icon={Bookmark} label="Saved" active />
             <SidebarLink href="/roadmap" icon={MapIcon} label="Roadmap" />
-            <SidebarLink href="/chat" icon={MessageCircle} label="AI Advisor" />
+            <SidebarLink 
+                href="/chat" 
+                icon={MessageCircle} 
+                label="AI Advisor" 
+                badge={
+                  <span className="ml-auto flex items-center gap-1 rounded-md bg-[#FBF0D9] px-2 py-0.5 text-[10px] font-bold text-[#C88A2B]">
+                    <Sparkles className="h-3 w-3" /> PRO
+                  </span>
+                }
+              />
             <SidebarLink href="/profile" icon={User} label="Profile" />
           </nav>
         </div>
@@ -161,6 +179,18 @@ export default async function SavedPage({
 
         {/* Top Desktop Header Bar */}
         <header className="sticky top-0 z-20 hidden lg:flex items-center justify-between border-b border-[#EAEAE2] bg-white/80 px-10 py-4 backdrop-blur-md">
+        <div>
+                    <Link href="/" className="flex items-center">
+                      <Image
+                        src="/logo.png"
+                        alt="SkillBridge Logo"
+                        width={130}
+                        height={35}
+                        priority
+                        className="h-12 w-auto object-contain"
+                      />
+                    </Link>
+                  </div>
           <div className="relative w-full max-w-md">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999]" />
             <input
@@ -421,11 +451,13 @@ function SidebarLink({
   icon: Icon,
   label,
   active,
+  badge
 }: {
   href: string
   icon: LucideIcon
   label: string
   active?: boolean
+  badge?: React.ReactNode;
 }) {
   return (
     <Link
@@ -438,6 +470,7 @@ function SidebarLink({
     >
       <Icon className="h-5 w-5" />
       {label}
+      {badge && <span className="ml-auto">{badge}</span>}
     </Link>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { 
@@ -52,9 +53,16 @@ export default function MobileHeader({
             <Menu className="h-6 w-6" />
           </button>
 
-          <Link href="/dashboard" className="font-serif text-xl font-bold tracking-tight">
-            <span className="text-[#E29D38]">Skills</span><span className="text-[#4B7355]">bridge</span>
-          </Link>
+          <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/logo.png"
+            alt="SkillBridge Logo"
+            width={130}
+            height={35}
+            priority
+            className="h-12 w-auto object-contain"
+          />
+        </Link>
         </div>
 
         {/* Right: Notifications & Profile Avatar Link */}
@@ -94,14 +102,16 @@ export default function MobileHeader({
           <div className="relative flex w-72 max-w-full flex-col justify-between border-r border-[#EAEAE2] bg-white px-6 py-8 z-10 shadow-xl animate-in slide-in-from-left duration-200">
             <div>
               <div className="flex items-center justify-between">
-                <Link 
-                  href="/dashboard" 
-                  onClick={() => setIsOpen(false)}
-                  className="font-serif text-2xl font-bold text-[#4B7355]"
-                >
-                  Skills<span className="text-[#E29D38]">bridge</span>
-                </Link>
-
+                <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="SkillBridge Logo"
+              width={130}
+              height={35}
+              priority
+              className="h-12 w-auto object-contain"
+            />
+          </Link>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="rounded-lg p-1.5 text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A] transition cursor-pointer"

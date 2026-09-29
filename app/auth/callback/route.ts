@@ -1,38 +1,40 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
+function getSafeNext(raw: string | null): string | null {
+  if (!raw) return null
+  // Only allow internal relative paths
+  if (!raw.startsWith('/') || raw.startsWith('//')) return null
+  return raw
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const code = url.searchParams.get('code')
-  const next = url.searchParams.get('next') || '/dashboard'
+  const next = getSafeNext(url.searchParams.get('next'))
 
-  console.log('🔐 Auth callback triggered')
-  console.log('Code:', code ? 'Present' : 'Missing')
-  console.log('Next redirect:', next)
+  const isCreatorFlow = !!next && next.startsWith('/creator')
+  const signInPath = isCreatorFlow ? '/auth/creator/sign-in' : '/sign-in'
 
   if (!code) {
     console.error('❌ No auth code in callback')
     return NextResponse.redirect(
-      new URL('/sign-in?error=No authorization code', url.origin)
+      new URL(`${signInPath}?error=No authorization code`, url.origin)
     )
   }
 
   try {
     const supabase = await createClient()
 
-    // Exchange code for session
-    console.log('📝 Exchanging code for session...')
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
     if (exchangeError) {
       console.error('❌ Exchange error:', exchangeError.message)
       return NextResponse.redirect(
-        new URL(`/sign-in?error=${encodeURIComponent(exchangeError.message)}`, url.origin)
+        new URL(`${signInPath}?error=${encodeURIComponent(exchangeError.message)}`, url.origin)
       )
     }
 
-    // Get the authenticated user
-    console.log('👤 Fetching user...')
     const {
       data: { user },
       error: getUserError,
@@ -41,13 +43,41 @@ export async function GET(request: Request) {
     if (getUserError || !user) {
       console.error('❌ Get user error:', getUserError?.message || 'No user found')
       return NextResponse.redirect(
-        new URL('/sign-in?error=Failed to get user', url.origin)
+        new URL(`${signInPath}?error=Failed to get user`, url.origin)
       )
     }
 
-    console.log('✅ User authenticated:', user.id)
+    // ---------- CREATOR FLOW ----------
+    if (isCreatorFlow) {
+      const { data: creator } = await supabase
+        .from('creator_profiles')
+        .select('user_id, verification_status')
+        .eq('user_id', user.id)
+        .maybeSingle()
 
-    // Check if profile exists
+      if (!creator) {
+        const { error: insertError } = await supabase
+          .from('creator_profiles')
+          .insert({
+            user_id: user.id,
+            contact_email: user.email,
+            verification_status: 'pending',
+          })
+
+        if (insertError) {
+          console.error('❌ Creator profile creation error:', insertError.message)
+        }
+      }
+
+      // Already approved creators go straight to the dashboard
+      if (creator?.verification_status === 'verified') {
+        return NextResponse.redirect(new URL('/creator', url.origin))
+      }
+
+      return NextResponse.redirect(new URL(next!, url.origin))
+    }
+
+    // ---------- STUDENT FLOW (unchanged) ----------
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id, completed_onboarding')
@@ -58,9 +88,7 @@ export async function GET(request: Request) {
       console.error('❌ Profile query error:', profileError.message)
     }
 
-    // If profile doesn't exist, create it (new user)
     if (!profile) {
-      console.log('🆕 New user - creating profile...')
       const { error: createError } = await supabase
         .from('profiles')
         .insert({
@@ -73,30 +101,21 @@ export async function GET(request: Request) {
 
       if (createError) {
         console.error('❌ Profile creation error:', createError.message)
-        // Don't fail here - continue anyway
-      } else {
-        console.log('✅ Profile created successfully')
       }
 
-      // New users always go to onboarding
-      console.log('➡️ Redirecting new user to /onboarding')
       return NextResponse.redirect(new URL('/onboarding', url.origin))
     }
 
-    // Existing user - check onboarding status
     if (!profile.completed_onboarding) {
-      console.log('➡️ Redirecting to /onboarding (incomplete)')
       return NextResponse.redirect(new URL('/onboarding', url.origin))
     }
 
-    // User has completed onboarding
-    console.log('➡️ Redirecting to /dashboard')
-    return NextResponse.redirect(new URL('/dashboard', url.origin))
+    return NextResponse.redirect(new URL(next || '/dashboard', url.origin))
   } catch (error) {
     console.error('❌ Callback error:', error)
     const errorMsg = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.redirect(
-      new URL(`/sign-in?error=${encodeURIComponent(errorMsg)}`, url.origin)
+      new URL(`${signInPath}?error=${encodeURIComponent(errorMsg)}`, url.origin)
     )
   }
 }

@@ -5,6 +5,7 @@ import { getChatMessages, getAIResponse, saveChatMessage } from '@/app/actions/c
 import { Send, Loader, X, Bot, User } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import PremiumUpsell from '@/components/PremiumUpsell'
 
 interface Message {
   id?: string
@@ -23,6 +24,7 @@ export default function ChatPanel({ opportunityId, opportunityTitle }: ChatPanel
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(true)
+  const [premiumRequired, setPremiumRequired] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -39,13 +41,15 @@ export default function ChatPanel({ opportunityId, opportunityTitle }: ChatPanel
       if (hasUserMessage && !hasAssistantMessage) {
         try {
           const userPrompt = initialMessages[0].content
-          const { message: aiMessage, error } = await getAIResponse(
+          const { message: aiMessage, error, premiumRequired: needsPremium } = await getAIResponse(
             userPrompt,
             opportunityId,
             opportunityTitle
           )
 
-          if (error) {
+          if (needsPremium) {
+            setPremiumRequired(true)
+          } else if (error) {
             setMessages((prev) => [
               ...prev,
               { role: 'assistant', content: `Error: ${error}` },
@@ -73,7 +77,7 @@ export default function ChatPanel({ opportunityId, opportunityTitle }: ChatPanel
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!input.trim() || loading) return
+    if (!input.trim() || loading || premiumRequired) return
 
     const userMessage = input.trim()
     setInput('')
@@ -89,13 +93,15 @@ export default function ChatPanel({ opportunityId, opportunityTitle }: ChatPanel
     try {
       await saveChatMessage(userMessage, 'user', opportunityId)
 
-      const { message: aiMessage, error } = await getAIResponse(
+      const { message: aiMessage, error, premiumRequired: needsPremium } = await getAIResponse(
         userMessage,
         opportunityId,
         opportunityTitle
       )
 
-      if (error) {
+      if (needsPremium) {
+        setPremiumRequired(true)
+      } else if (error) {
         setMessages((prev) => [
           ...prev,
           { role: 'assistant', content: `Error: ${error}` },
@@ -139,7 +145,9 @@ export default function ChatPanel({ opportunityId, opportunityTitle }: ChatPanel
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-        {messages.length === 0 && !loading ? (
+        {premiumRequired ? (
+          <PremiumUpsell compact />
+        ) : messages.length === 0 && !loading ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="text-3xl mb-2">🤖</div>
             <p className="text-sm font-medium text-[#1A1A1A]">Ask About This Opportunity</p>
@@ -211,13 +219,13 @@ export default function ChatPanel({ opportunityId, opportunityTitle }: ChatPanel
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask something..."
-          disabled={loading}
+          placeholder={premiumRequired ? 'Upgrade required' : 'Ask something...'}
+          disabled={loading || premiumRequired}
           className="flex-1 rounded-full border border-[#EBEBE3] bg-[#F4F4EE] px-4 py-2 text-sm text-[#1A1A1A] placeholder-[#999] outline-none focus:ring-2 focus:ring-[#4B7355]/30 disabled:opacity-50 font-medium"
         />
         <button
           type="submit"
-          disabled={loading || !input.trim()}
+          disabled={loading || premiumRequired || !input.trim()}
           className="flex items-center justify-center h-9 w-9 rounded-full bg-[#E29D38] text-white transition hover:bg-[#D48F2A] disabled:opacity-50 shrink-0"
         >
           <Send className="h-4 w-4" />

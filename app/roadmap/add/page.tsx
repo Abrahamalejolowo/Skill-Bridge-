@@ -74,7 +74,7 @@ export default function RoadmapAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F2] p-8">
+    <div className="min-h-screen bg-[#FAFAF0] p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="font-serif text-3xl font-bold mb-2">Add Roadmap Item</h1>
         <p className="text-gray-600 mb-8">Create a new skill gap or learning goal</p>

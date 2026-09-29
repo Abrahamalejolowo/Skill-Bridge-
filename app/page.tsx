@@ -12,53 +12,77 @@ import {
   Target,
   User,
   X,
+  Building2,
 } from "lucide-react";
 import { HeroHeading } from "@/components/AnimatedHeading";
+import Image from "next/image";
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#FFFDF7] text-[#1E293B] font-sans antialiased">
+    <div className="min-h-screen bg-[#FAFAF0] text-[#1E293B] font-sans antialiased">
       {/* 1. Header / Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-[#FFFDF7]/95 backdrop-blur">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-[#FAFAF0]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-0.5 text-xl font-bold">
-            <span className="text-[#3B6E52]">Skills</span>
-            <span className="text-[#E59832]">Bridge</span>
+
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="SkillBridge Logo"
+              width={130}
+              height={35}
+              priority
+              className="h-12 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 text-sm font-medium text-[#475569] md:flex">
-            <Link href="/opportunities" className="hover:text-[#3B6E52] transition-colors">
+            <Link
+              href="/opportunities"
+              className="hover:text-[#3B6E52] transition-colors"
+            >
               Opportunities
             </Link>
-            <Link href="/how-it-works" className="hover:text-[#3B6E52] transition-colors">
+            <Link
+              href="/how-it-works"
+              className="hover:text-[#3B6E52] transition-colors"
+            >
               How It Works
             </Link>
-            <Link href="/about" className="hover:text-[#3B6E52] transition-colors">
+            <Link
+              href="/about"
+              className="hover:text-[#3B6E52] transition-colors"
+            >
               About
             </Link>
-            <Link href="/features" className="hover:text-[#3B6E52] transition-colors">
+            <Link
+              href="/features"
+              className="hover:text-[#3B6E52] transition-colors"
+            >
               Features
             </Link>
           </nav>
 
           {/* Action Buttons */}
           <div className="hidden items-center gap-3 md:flex">
-            <Link
-              href="/sign-in"
-              className="rounded-lg border border-[#CBD5E1] bg-white px-4 py-2 text-sm font-medium text-[#1E293B] shadow-sm hover:bg-[#F8FAFC] transition"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/sign-up"
-              className="rounded-lg bg-[#E59832] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#D48721] transition"
-            >
-              Sign up
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/sign-in"
+                className="rounded-lg border border-[#CBD5E1] bg-white px-4 py-2 text-sm font-medium text-[#1E293B] shadow-sm hover:bg-[#F8FAFC] transition"
+              >
+                Student Login
+              </Link>
+              <Link
+                href="/auth/creator/sign-in"
+                className="rounded-lg flex bg-[#E59832] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#D48721] transition gap-2"
+              >
+                <Building2 className="size-4" />
+                Creator Login
+              </Link>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -67,17 +91,27 @@ export default function LandingPage() {
             className="md:hidden p-2 text-[#475569]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+            {mobileMenuOpen ? (
+              <X className="size-6" />
+            ) : (
+              <Menu className="size-6" />
+            )}
           </button>
         </div>
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="border-t border-[#E2E8F0] bg-[#FFFDF7] px-6 py-4 md:hidden flex flex-col gap-3">
-            <Link href="/opportunities" className="py-1 font-medium text-[#475569]">
+          <div className="border-t border-[#E2E8F0] bg-[#FAFAF0] px-6 py-4 md:hidden flex flex-col gap-3">
+            <Link
+              href="/opportunities"
+              className="py-1 font-medium text-[#475569]"
+            >
               Opportunities
             </Link>
-            <Link href="/how-it-works" className="py-1 font-medium text-[#475569]">
+            <Link
+              href="/how-it-works"
+              className="py-1 font-medium text-[#475569]"
+            >
               How It Works
             </Link>
             <Link href="/about" className="py-1 font-medium text-[#475569]">
@@ -91,7 +125,14 @@ export default function LandingPage() {
                 href="/sign-in"
                 className="w-full text-center rounded-lg border border-[#CBD5E1] bg-white py-2 text-sm font-medium"
               >
-                Log in
+                Student Login
+              </Link>
+              <Link
+                href="/creator"
+                className="w-full text-center rounded-lg border border-[#CBD5E1] bg-white py-2 text-sm font-medium flex items-center justify-center gap-2"
+              >
+                <Building2 className="size-4" />
+                Creator Login
               </Link>
               <Link
                 href="/sign-up"
@@ -120,7 +161,9 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-[#64748B] sm:text-base">
-            Discover scholarships, internships, grants, fellowships, competitions and learning opportunities matched to your skills, goals and eligibility.
+            Discover scholarships, internships, grants, fellowships,
+            competitions and learning opportunities matched to your skills,
+            goals and eligibility.
           </p>
 
           {/* CTAs */}
@@ -132,11 +175,19 @@ export default function LandingPage() {
               Create Your Free Profile
             </Link>
             <Link
-              href="/how-it-works"
-              className="w-full sm:w-auto rounded-lg border border-[#CBD5E1] bg-white px-6 py-3 text-sm font-semibold text-[#1E293B] hover:bg-[#F8FAFC] transition"
+              href="auth/creator/sign-up"
+              className="inline-flex items-center gap-2 rounded-lg border-2 border-[#E59832] px-6 py-3 text-sm font-semibold text-[#E59832] hover:bg-[#FEF6E6] transition"
             >
-              See How It Works
+              <Building2 className="size-4" />
+              Create Creator Account
             </Link>
+          </div>
+
+          {/* Creator CTA */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-[#64748B] mb-3">
+              Are you an organization looking to post opportunities?
+            </p>
           </div>
         </div>
       </section>
@@ -150,11 +201,14 @@ export default function LandingPage() {
             </span>
 
             <h2 className="mt-4 font-serif text-2xl font-bold text-[#1E293B] sm:text-4xl">
-              The <span className="text-[#3B6E52]">Right Opportunity</span> Is Out There. Finding It Shouldn&apos;t Be This Difficult.
+              The <span className="text-[#3B6E52]">Right Opportunity</span> Is
+              Out There. Finding It Shouldn&apos;t Be This Difficult.
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl text-xs text-[#64748B] sm:text-sm leading-relaxed">
-              Students miss valuable opportunities because information is scattered, requirements are confusing, deadlines are easy to miss, and it is difficult to know whether they are truly ready to apply.
+              Students miss valuable opportunities because information is
+              scattered, requirements are confusing, deadlines are easy to miss,
+              and it is difficult to know whether they are truly ready to apply.
             </p>
           </div>
 
@@ -168,7 +222,8 @@ export default function LandingPage() {
                 Scattered Opportunities
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-[#64748B]">
-                Scholarships, Internships, Grants And Competitions Are Spread Across Countless Websites And Social Platforms.
+                Scholarships, Internships, Grants And Competitions Are Spread
+                Across Countless Websites And Social Platforms.
               </p>
             </div>
 
@@ -180,7 +235,8 @@ export default function LandingPage() {
                 Unclear Requirements
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-[#64748B]">
-                Finding An Opportunity Is One Thing. Knowing Whether You Actually Qualify Is Another.
+                Finding An Opportunity Is One Thing. Knowing Whether You
+                Actually Qualify Is Another.
               </p>
             </div>
 
@@ -192,7 +248,8 @@ export default function LandingPage() {
                 Missed Chances
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-[#64748B]">
-                Without Clear Deadlines And Guidance, Valuable Opportunities Can Easily Pass You By.
+                Without Clear Deadlines And Guidance, Valuable Opportunities Can
+                Easily Pass You By.
               </p>
             </div>
           </div>
@@ -211,7 +268,8 @@ export default function LandingPage() {
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-xs text-white/80 sm:text-sm leading-relaxed">
-            Bring relevant opportunities into one place and use your profile to understand what fits, why you match, and what you need to improve.
+            Bring relevant opportunities into one place and use your profile to
+            understand what fits, why you match, and what you need to improve.
           </p>
         </div>
       </section>
@@ -227,7 +285,9 @@ export default function LandingPage() {
               Find The Opportunity You&apos;re Actually Ready For.
             </h2>
             <p className="mt-4 text-xs leading-relaxed text-[#64748B] sm:text-sm">
-              Skills Bridge analyzes full requirement sets against your profile so you know where you stand before spending hours on an application.
+              Skills Bridge analyzes full requirement sets against your profile
+              so you know where you stand before spending hours on an
+              application.
             </p>
           </div>
 
@@ -263,7 +323,9 @@ export default function LandingPage() {
                   <span>Relevant Skill: Networking Basics</span>
                 </div>
                 <div className="border-t border-[#E2E8F0] pt-3 text-xs text-[#64748B] space-y-2">
-                  <p className="font-semibold text-[#1E293B]">Gaps to improve:</p>
+                  <p className="font-semibold text-[#1E293B]">
+                    Gaps to improve:
+                  </p>
                   <p className="flex items-center gap-2">
                     <span className="size-1.5 rounded-full bg-[#E59832]" />
                     2+ Years Experience (Optional)
@@ -276,7 +338,8 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-6 rounded-lg bg-[#FEF6E6] p-3 text-[11px] text-[#B37019]">
-                <strong>AI Recommendation:</strong> You meet all core requirements! You stand a high chance of moving forward.
+                <strong>AI Recommendation:</strong> You meet all core
+                requirements! You stand a high chance of moving forward.
               </div>
             </div>
           </div>
@@ -291,10 +354,12 @@ export default function LandingPage() {
               How It Works
             </span>
             <h2 className="mt-4 font-serif text-2xl font-bold text-[#1E293B] sm:text-4xl">
-              From Discovery To One Profile. Real Matches. A Clear Next Step. Application, All In One Journey.
+              From Discovery To One Profile. Real Matches. A Clear Next Step.
+              Application, All In One Journey.
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-xs text-[#64748B] sm:text-sm">
-              Skills Bridge simplifies your journey from discovery to application.
+              Skills Bridge simplifies your journey from discovery to
+              application.
             </p>
           </div>
 
@@ -307,7 +372,8 @@ export default function LandingPage() {
                 Build your profile
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-[#64748B]">
-                Add your education, skills, interests, location and goals. You only do it once.
+                Add your education, skills, interests, location and goals. You
+                only do it once.
               </p>
             </div>
 
@@ -319,7 +385,8 @@ export default function LandingPage() {
                 Discover opportunities
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-[#64748B]">
-                Browse verified scholarships, internships, grants, and fellowships.
+                Browse verified scholarships, internships, grants, and
+                fellowships.
               </p>
             </div>
 
@@ -365,13 +432,16 @@ export default function LandingPage() {
           <div className="grid gap-10 lg:grid-cols-2">
             <div>
               <h2 className="font-serif text-2xl font-bold text-[#1E293B] sm:text-3xl leading-snug">
-                The Readiness Score: The Difference Between Browsing And Applying.
+                The Readiness Score: The Difference Between Browsing And
+                Applying.
               </h2>
               <p className="mt-4 text-xs leading-relaxed text-[#64748B] sm:text-sm">
-                Understand why you match an opportunity, know your missing qualifications, and see actionable steps to build your skills.
+                Understand why you match an opportunity, know your missing
+                qualifications, and see actionable steps to build your skills.
               </p>
               <div className="mt-6 border-l-2 border-[#E59832] pl-4 italic text-xs text-[#64748B]">
-                &ldquo;The Top Match Recommended By Skills Bridge Saved Me Hours Of Research.&rdquo;
+                &ldquo;The Top Match Recommended By Skills Bridge Saved Me Hours
+                Of Research.&rdquo;
               </div>
             </div>
 
@@ -381,7 +451,8 @@ export default function LandingPage() {
                   Matched And Missing Requirements, Side By Side
                 </h3>
                 <p className="mt-1 text-xs text-[#64748B]">
-                  No guessing whether you qualify. Clear visibility into every criteria.
+                  No guessing whether you qualify. Clear visibility into every
+                  criteria.
                 </p>
               </div>
 
@@ -399,7 +470,8 @@ export default function LandingPage() {
                   A Next Step, Not Just A Verdict
                 </h3>
                 <p className="mt-1 text-xs text-[#64748B]">
-                  Get guided recommendations on how to close skill gaps before applying.
+                  Get guided recommendations on how to close skill gaps before
+                  applying.
                 </p>
               </div>
             </div>
@@ -415,7 +487,8 @@ export default function LandingPage() {
               Your Next Opportunity Starts Here.
             </h2>
             <p className="mt-2 text-xs text-white/90 sm:text-sm">
-              Create A Free Profile And See Your First Readiness Scores In Minutes.
+              Create A Free Profile And See Your First Readiness Scores In
+              Minutes.
             </p>
           </div>
 
@@ -458,7 +531,7 @@ export default function LandingPage() {
         </div>
 
         <div className="mx-auto mt-8 max-w-5xl border-t border-[#E2E8F0] pt-4 text-[11px] text-[#94A3B8]">
-          Built for students ready to move forward.
+          Built for students and organizations ready to move forward.
         </div>
       </footer>
     </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import Image from 'next/image'
 import { getProfile } from "@/app/actions/profile";
 import MobileHeader from "@/components/MobileHeader";
 import {
@@ -17,6 +18,7 @@ import {
   Wifi,
   ArrowRight,
   MessageCircle,
+  Sparkles,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -128,20 +130,36 @@ export default async function DashboardPage() {
     const initials = `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
 
     return (
-      <div className="flex h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased overflow-hidden">
+      <div className="flex h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-hidden">
         {/* Desktop Left Sidebar (Fixed) */}
         <aside className="hidden lg:flex w-64 flex-col justify-between border-r border-[#EAEAE2] bg-white px-6 py-8 z-30 shrink-0">
           <div>
-            <Link href="/" className="font-serif text-2xl font-bold text-[#4B7355]">
-              Skills<span className="text-[#E29D38]">bridge</span>
-            </Link>
+            <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="SkillBridge Logo"
+              width={130}
+              height={35}
+              priority
+              className="h-12 w-auto object-contain"
+            />
+          </Link>
 
             <nav className="mt-12 space-y-2">
               <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Dashboard" active />
               <SidebarLink href="/explore" icon={Compass} label="Explore" />
               <SidebarLink href="/saved" icon={Bookmark} label="Saved" />
               <SidebarLink href="/roadmap" icon={Map} label="Roadmap" />
-              <SidebarLink href="/chat" icon={MessageCircle} label="AI Advisor" />
+              <SidebarLink 
+                              href="/chat" 
+                              icon={MessageCircle} 
+                              label="AI Advisor" 
+                              badge={
+                                <span className="ml-auto flex items-center gap-1 rounded-md bg-[#FBF0D9] px-2 py-0.5 text-[10px] font-bold text-[#C88A2B]">
+                                  <Sparkles className="h-3 w-3" /> PRO
+                                </span>
+                              }
+                            />
               <SidebarLink href="/profile" icon={User} label="Profile" />
             </nav>
           </div>
@@ -164,6 +182,18 @@ export default async function DashboardPage() {
 
           {/* Top Desktop Bar */}
           <header className="hidden lg:flex items-center justify-between border-b border-[#EAEAE2] bg-white/80 px-10 py-4 backdrop-blur-md shrink-0 z-20">
+          <div>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="SkillBridge Logo"
+                width={130}
+                height={35}
+                priority
+                className="h-12 w-auto object-contain"
+              />
+            </Link>
+          </div>
             <div className="relative w-full max-w-md">
               <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999]" />
               <input
@@ -375,11 +405,13 @@ function SidebarLink({
   icon: Icon,
   label,
   active,
+  badge,
 }: {
   href: string;
   icon: any;
   label: string;
   active?: boolean;
+  badge?: React.ReactNode;
 }) {
   return (
     <Link
@@ -392,6 +424,7 @@ function SidebarLink({
     >
       <Icon className="h-5 w-5" />
       {label}
+      {badge && <span className="ml-auto">{badge}</span>}
     </Link>
   );
 }
@@ -401,6 +434,7 @@ function StatCard({ value, label }: { value: string; label: string }) {
     <div className="rounded-2xl border border-[#EBEBE3] bg-white p-5 sm:p-6 shadow-sm">
       <p className="text-2xl sm:text-3xl font-bold text-[#C88A2B]">{value}</p>
       <p className="mt-2 text-xs font-medium text-[#777]">{label}</p>
+      
     </div>
   );
 }

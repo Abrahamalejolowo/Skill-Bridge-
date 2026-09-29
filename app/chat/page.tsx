@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import MobileHeader from '@/components/MobileHeader'
 import ChatInterface from '@/components/ChatInterface'
@@ -16,6 +17,7 @@ import {
   Bell,
   MessageCircle,
   MessageSquare,
+  Sparkles,
   LucideIcon,
 } from 'lucide-react'
 
@@ -131,20 +133,27 @@ export default async function ChatPage({
   const initials = `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase() || 'SB'
 
   return (
-    <div className="flex h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased overflow-hidden">
+    <div className="flex h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-hidden">
       {/* Left Sidebar Navigation */}
       <aside className="hidden lg:flex w-64 flex-col justify-between border-r border-[#EAEAE2] bg-white px-6 py-8 z-30 shrink-0 h-screen sticky top-0">
         <div>
-          <Link href="/" className="font-serif text-2xl font-bold text-[#4B7355]">
-            Skills<span className="text-[#E29D38]">bridge</span>
-          </Link>
+          <Link href="/" className="flex items-center">
+                        <Image
+                          src="/logo.png"
+                          alt="SkillBridge Logo"
+                          width={130}
+                          height={35}
+                          priority
+                          className="h-12 w-auto object-contain"
+                        />
+                      </Link>
 
           <nav className="mt-12 space-y-2">
             <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Dashboard" />
             <SidebarLink href="/explore" icon={Compass} label="Explore" />
             <SidebarLink href="/saved" icon={Bookmark} label="Saved" />
             <SidebarLink href="/roadmap" icon={Map} label="Roadmap" />
-            <SidebarLink href="/chat" icon={MessageCircle} label="AI Advisor" active />
+            <SidebarLink href="/chat" icon={MessageCircle} label="AI Advisor" active isPremium />
             <SidebarLink href="/profile" icon={User} label="Profile" />
           </nav>
         </div>
@@ -166,6 +175,18 @@ export default async function ChatPage({
 
         {/* Top Header Bar */}
         <header className="hidden lg:flex items-center justify-between border-b border-[#EAEAE2] bg-white/80 px-10 py-4 backdrop-blur-md shrink-0 z-20">
+         <div>
+                     <Link href="/" className="flex items-center">
+                       <Image
+                         src="/logo.png"
+                         alt="SkillBridge Logo"
+                         width={130}
+                         height={35}
+                         priority
+                         className="h-12 w-auto object-contain"
+                       />
+                     </Link>
+                   </div>
           <div className="relative w-full max-w-md">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999]" />
             <input
@@ -236,23 +257,34 @@ function SidebarLink({
   icon: Icon,
   label,
   active,
+  isPremium,
 }: {
   href: string
   icon: LucideIcon
   label: string
   active?: boolean
+  isPremium?: boolean
 }) {
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-medium transition ${
+      className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition ${
         active
           ? 'bg-[#F4F7F4] text-[#4B7355]'
           : 'text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A]'
       }`}
     >
-      <Icon className="h-5 w-5" />
-      {label}
+      <div className="flex items-center gap-3.5">
+        <Icon className="h-5 w-5" />
+        <span>{label}</span>
+      </div>
+
+      {isPremium && (
+        <span className="flex items-center gap-1 bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-amber-200">
+          <Sparkles className="h-3 w-3 text-amber-600" />
+          PRO
+        </span>
+      )}
     </Link>
   )
 }
