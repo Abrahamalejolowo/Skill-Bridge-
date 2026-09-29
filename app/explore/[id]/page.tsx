@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/app/actions/profile";
 import OpportunityActions from "@/components/OpportunityActions";
 import ChatAboutOpportunityButton from "@/components/ChatWithOpportunity";
+import ApplyButton from "@/components/ApplyButton";
 import {
   LayoutDashboard,
   Compass,
@@ -18,8 +19,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   XCircle,
-  ExternalLink,
-  Inbox,
   LucideIcon,
   MessageCircle,
 } from "lucide-react";
@@ -33,6 +32,19 @@ interface OpportunityDetailProps {
 interface ApplicationRecord {
   id: string;
   status: string;
+}
+
+function formatPosted(createdAt?: string | null) {
+  if (!createdAt) return "Posted recently";
+  const days = Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+  if (days <= 0) return "Posted today";
+  if (days === 1) return "Posted yesterday";
+  if (days < 30) return `Posted ${days} days ago`;
+  return `Posted ${new Date(createdAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })}`;
 }
 
 export default async function OpportunityDetailPage({ params }: OpportunityDetailProps) {
@@ -60,7 +72,7 @@ export default async function OpportunityDetailPage({ params }: OpportunityDetai
     notFound();
   }
 
-  // Fetch current user's application/saved status for this opportunity
+  // Student's own tracker (saved / in progress / applied)
   const { data: userApplication } = await supabase
     .from("opportunity_applications")
     .select("id, status")
@@ -68,21 +80,48 @@ export default async function OpportunityDetailPage({ params }: OpportunityDetai
     .eq("opportunity_id", id)
     .maybeSingle();
 
-  const currentStatus = (userApplication as ApplicationRecord)?.status || "none";
+  // Real application the creator can see
+  const { data: creatorApplication } = await supabase
+    .from("applications")
+    .select("id")
+    .eq("student_id", user.id)
+    .eq("opportunity_id", id)
+    .maybeSingle();
+
+  const hasApplied = Boolean(creatorApplication);
+  const currentStatus = hasApplied
+    ? "applied"
+    : (userApplication as ApplicationRecord | null)?.status || "none";
 
   const firstName = profile?.first_name || user.email?.split("@")[0] || "User";
   const lastName = profile?.last_name || "";
   const initials = `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
 
+  // Deadline counts through the end of the last day
   let formattedDeadline = "Open";
+  let deadlinePassed = false;
   if (opportunity.deadline) {
     const [year, month, day] = opportunity.deadline.split("-").map(Number);
     if (year && month && day) {
-      const dateObj = new Date(year, month - 1, day);
-      const diffDays = Math.ceil((dateObj.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-      formattedDeadline = diffDays > 0 ? `${diffDays} days left` : "Deadline Passed";
+      const endOfDay = new Date(year, month - 1, day, 23, 59, 59);
+      const diffDays = Math.ceil((endOfDay.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      if (diffDays > 1) {
+        formattedDeadline = `${diffDays} days left`;
+      } else if (diffDays === 1) {
+        formattedDeadline = "1 day left";
+      } else {
+        formattedDeadline = "Deadline Passed";
+        deadlinePassed = true;
+      }
     }
   }
+
+  const applyUrl: string | null =
+    opportunity.official_url || opportunity.url || opportunity.application_url || null;
+
+  const requirements: string[] = Array.isArray(opportunity.requirements)
+    ? opportunity.requirements
+    : [];
 
   // --- Real Algorithmic Readiness Calculation ---
   const userSkills = (profile?.skills as string[]) || [];
@@ -108,12 +147,12 @@ export default async function OpportunityDetailPage({ params }: OpportunityDetai
         )
       );
     } else {
-      computedScore = 70; 
+      computedScore = 70;
     }
   }
 
   return (
-    <div className="flex h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased overflow-hidden">
+    <div className="flex h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-hidden">
       {/* Desktop Left Sidebar */}
       <aside className="hidden lg:flex w-64 flex-col justify-between border-r border-[#EAEAE2] bg-white px-6 py-8 z-30 shrink-0">
         <div>
@@ -190,7 +229,7 @@ export default async function OpportunityDetailPage({ params }: OpportunityDetai
               {opportunity.title}
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-[#666]">
-              {opportunity.organization} · Posted Recently
+              {opportunity.organization} · {formatPosted(opportunity.created_at)}
             </p>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -221,6 +260,21 @@ export default async function OpportunityDetailPage({ params }: OpportunityDetai
                   {opportunity.description || "No description provided for this opportunity."}
                 </p>
               </div>
+
+              {/* Requirements posted by the creator */}
+              {requirements.length > 0 && (
+                <div className="rounded-3xl border border-[#EBEBE3] bg-white p-6 sm:p-8 shadow-sm">
+                  <h2 className="font-serif text-lg sm:text-xl font-semibold">Requirements</h2>
+                  <ul className="mt-4 space-y-3">
+                    {requirements.map((requirement, index) => (
+                      <li key={index} className="flex items-start gap-2.5 text-sm text-[#555]">
+                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#4B7355] shrink-0" />
+                        <span>{requirement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Real Computed Readiness Score */}
               <div className="rounded-3xl border border-[#EBEBE3] bg-white p-6 sm:p-8 shadow-sm">
@@ -305,32 +359,37 @@ export default async function OpportunityDetailPage({ params }: OpportunityDetai
                 <MetaRow label="Category" value={opportunity.category} />
                 <MetaRow label="Deadline" value={formattedDeadline} valueColor="text-[#D9534F]" />
                 <MetaRow label="Location" value={opportunity.location || "Remote"} />
+                {opportunity.compensation && (
+                  <MetaRow label="Compensation" value={opportunity.compensation} />
+                )}
+                {opportunity.duration_months && (
+                  <MetaRow
+                    label="Duration"
+                    value={`${opportunity.duration_months} month${opportunity.duration_months === 1 ? "" : "s"}`}
+                  />
+                )}
               </div>
 
               <div className="mt-8 space-y-3">
-                <a
-                  href={opportunity.application_url || opportunity.applicationUrl || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C88A2B] py-3 text-xs font-semibold text-white transition hover:bg-[#B57A22]"
-                >
-                  Apply On Official Site
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
+                <ApplyButton
+                  opportunityId={id}
+                  applyUrl={applyUrl}
+                  alreadyApplied={hasApplied}
+                  closed={deadlinePassed}
+                />
 
                 {/* Interactive Save / Applied Actions Component */}
                 <OpportunityActions opportunityId={id} initialStatus={currentStatus} />
 
                 {/* Chat with AI About This Opportunity - No Popup! */}
-                <ChatAboutOpportunityButton 
-                  opportunityId={id} 
+                <ChatAboutOpportunityButton
+                  opportunityId={id}
                   opportunityTitle={opportunity.title}
                 />
               </div>
             </div>
           </div>
         </main>
-
       </div>
     </div>
   );
@@ -350,25 +409,11 @@ function SidebarLink({ href, icon: Icon, label, active }: { href: string; icon: 
   );
 }
 
-function MobileNavLink({ href, icon: Icon, label, active }: { href: string; icon: LucideIcon; label: string; active?: boolean }) {
-  return (
-    <Link
-      href={href}
-      className={`flex flex-col items-center gap-1 px-3 py-1 text-[10px] font-medium transition ${
-        active ? "text-[#4B7355]" : "text-[#777] hover:text-[#1A1A1A]"
-      }`}
-    >
-      <Icon className="h-5 w-5" />
-      <span>{label}</span>
-    </Link>
-  );
-}
-
 function MetaRow({ label, value, valueColor = "text-[#1A1A1A]" }: { label: string; value: string; valueColor?: string }) {
   return (
-    <div className="flex items-center justify-between py-3.5">
+    <div className="flex items-center justify-between gap-4 py-3.5">
       <span className="text-[#888]">{label}</span>
-      <span className={`font-medium ${valueColor}`}>{value}</span>
+      <span className={`font-medium text-right ${valueColor}`}>{value}</span>
     </div>
   );
 }

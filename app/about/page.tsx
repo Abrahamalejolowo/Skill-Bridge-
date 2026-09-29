@@ -1,5 +1,7 @@
 import Link from 'next/link'
-import { ArrowLeft, HelpCircle } from 'lucide-react'
+import Image from 'next/image'
+
+import { ArrowLeft, HelpCircle,Building2 } from 'lucide-react'
 
 const values = [
   {
@@ -18,14 +20,20 @@ const values = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased">
+    <main className="min-h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased">
       {/* 1. Header / Navbar matching site design */}
-      <header className="border-b border-[#EAEAE2] bg-white">
+      <header className="border-b border-[#EAEAE2] bg-background">
         <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
-          <Link href="/" className="font-serif text-2xl font-bold flex items-center gap-0.5">
-            <span className="text-[#4B7355]">Skills</span>
-            <span className="text-[#E29D38]">bridge</span>
-          </Link>
+           <Link href="/" className="flex items-center">
+                        <Image
+                          src="/logo.png"
+                          alt="SkillBridge Logo"
+                          width={130}
+                          height={35}
+                          priority
+                          className="h-12 w-auto object-contain"
+                        />
+                      </Link>
 
           <nav className="hidden items-center gap-8 text-sm font-medium text-[#4A5568] md:flex">
             <Link href="/opportunities" className="hover:text-[#4B7355] transition-colors">
@@ -42,25 +50,28 @@ export default function AboutPage() {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/sign-in"
-              className="rounded-xl border border-[#4B7355] px-5 py-2 text-sm font-semibold text-[#4B7355] transition hover:bg-[#F4F7F4]"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/sign-up"
-              className="rounded-xl bg-[#E29D38] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#D48F2A]"
-            >
-              Sign up
-            </Link>
-          </div>
+          <div className="hidden items-center gap-3 md:flex">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href="/sign-in"
+                          className="rounded-lg border border-[#CBD5E1] bg-white px-4 py-2 text-sm font-medium text-[#1E293B] shadow-sm hover:bg-[#F8FAFC] transition"
+                        >
+                          Student Login
+                        </Link>
+                        <Link
+                          href="/auth/creator/sign-in"
+                          className="rounded-lg flex bg-[#E59832] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#D48721] transition gap-2"
+                        >
+                          <Building2 className="size-4" />
+                          Creator Login
+                        </Link>
+                      </div>
+                    </div>
         </div>
       </header>
 
       {/* Main Container */}
-      <section className="mx-auto max-w-5xl px-5 py-16 sm:px-8 lg:py-24">
+      <section className="mx-auto bg-background max-w-5xl px-5 py-16 sm:px-8 lg:py-24">
         
         {/* Top Badge Indicator */}
         <div className="flex justify-center">

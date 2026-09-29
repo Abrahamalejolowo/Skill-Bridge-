@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import MobileHeader from '@/components/MobileHeader'
 import { updateProfile } from '@/app/actions/profile'
@@ -17,6 +18,7 @@ import {
   Loader2,
   LucideIcon,
   MessageCircle,
+  Sparkles
 } from 'lucide-react'
 
 interface ProfilePageProps {
@@ -133,12 +135,19 @@ export default function ProfileClientWrapper({ initialProfile, userEmail, applic
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased overflow-x-hidden">
+    <div className="flex min-h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-x-hidden">
       {/* Desktop Sidebar */}
       <aside className="fixed bottom-0 top-0 left-0 hidden lg:flex w-64 flex-col justify-between border-r border-[#EAEAE2] bg-white px-6 py-8 z-30">
         <div>
-          <Link href="/" className="font-serif text-2xl font-bold text-[#4B7355]">
-            Skills<span className="text-[#E29D38]">bridge</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="SkillBridge Logo"
+              width={130}
+              height={35}
+              priority
+              className="h-12 w-auto object-contain"
+            />
           </Link>
 
           <nav className="mt-12 space-y-2">
@@ -146,7 +155,16 @@ export default function ProfileClientWrapper({ initialProfile, userEmail, applic
             <SidebarLink href="/explore" icon={Compass} label="Explore" />
             <SidebarLink href="/saved" icon={Bookmark} label="Saved" />
             <SidebarLink href="/roadmap" icon={Map} label="Roadmap" />
-            <SidebarLink href="/chat" icon={MessageCircle} label="AI Advisor" />
+            <SidebarLink 
+                href="/chat" 
+                icon={MessageCircle} 
+                label="AI Advisor" 
+                badge={
+                  <span className="ml-auto flex items-center gap-1 rounded-md bg-[#FBF0D9] px-2 py-0.5 text-[10px] font-bold text-[#C88A2B]">
+                    <Sparkles className="h-3 w-3" /> PRO
+                  </span>
+                }
+              />
             <SidebarLink href="/profile" icon={User} label="Profile" active />
           </nav>
         </div>
@@ -643,11 +661,13 @@ function SidebarLink({
   icon: Icon,
   label,
   active,
+  badge
 }: {
   href: string
   icon: LucideIcon
   label: string
   active?: boolean
+  badge?: React.ReactNode;
 }) {
   return (
     <Link
@@ -660,6 +680,7 @@ function SidebarLink({
     >
       <Icon className="h-5 w-5" />
       {label}
+      {badge && <span className="ml-auto">{badge}</span>}
     </Link>
   )
 }

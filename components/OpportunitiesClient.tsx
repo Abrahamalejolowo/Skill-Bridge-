@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { CalendarDays, MapPin, Search, Bookmark, ArrowUpRight, ArrowLeft, SlidersHorizontal } from 'lucide-react'
+import Image from 'next/image'
+import { CalendarDays, MapPin, Search, Bookmark, ArrowUpRight, ArrowLeft, SlidersHorizontal ,Building2 } from 'lucide-react'
 
 const filters = [
   'All',
@@ -39,15 +40,20 @@ export default function OpportunitiesClient({ initialItems }: OpportunitiesClien
   })
 
   return (
-    <main className="min-h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased">
+    <main className="min-h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased">
       {/* Header */}
-      <header className="border-b border-[#EAEAE2] bg-white">
+      <header className="border-b border-[#EAEAE2] bg-[#FAFAF0]">
         <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
-          <Link href="/" className="font-serif text-2xl font-bold flex items-center gap-0.5">
-            <span className="text-[#4B7355]">Skills</span>
-            <span className="text-[#E29D38]">bridge</span>
-          </Link>
-
+          <Link href="/" className="flex items-center">
+                        <Image
+                          src="/logo.png"
+                          alt="SkillBridge Logo"
+                          width={130}
+                          height={35}
+                          priority
+                          className="h-12 w-auto object-contain"
+                        />
+                      </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium text-[#4A5568] md:flex">
             <Link href="/opportunities" className="text-[#4B7355] font-semibold transition-colors">
               Opportunities
@@ -62,21 +68,22 @@ export default function OpportunitiesClient({ initialItems }: OpportunitiesClien
               Features
             </Link>
           </nav>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href="/sign-in"
+                          className="rounded-lg border border-[#CBD5E1] bg-white px-4 py-2 text-sm font-medium text-[#1E293B] shadow-sm hover:bg-[#F8FAFC] transition"
+                        >
+                          Student Login
+                        </Link>
+                        <Link
+                          href="/auth/creator/sign-in"
+                          className="rounded-lg flex bg-[#E59832] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#D48721] transition gap-2"
+                        >
+                          <Building2 className="size-4" />
+                          Creator Login
+                        </Link>
+                      </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/sign-in"
-              className="rounded-xl border border-[#4B7355] px-5 py-2 text-sm font-semibold text-[#4B7355] transition hover:bg-[#F4F7F4]"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/sign-up"
-              className="rounded-xl bg-[#E29D38] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#D48F2A]"
-            >
-              Sign up
-            </Link>
-          </div>
         </div>
       </header>
 

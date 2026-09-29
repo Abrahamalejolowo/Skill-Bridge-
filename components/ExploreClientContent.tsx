@@ -21,8 +21,10 @@ import {
   CheckCircle,
   AlertCircle,
   LucideIcon,
-  MessageCircle
+  MessageCircle,
+  Sparkles,
 } from "lucide-react";
+import Image from 'next/image'
 
 export default function ExploreClientContent({
   opportunities,
@@ -47,20 +49,45 @@ export default function ExploreClientContent({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#F7F7F2] text-[#1A1A1A] font-sans antialiased overflow-hidden relative">
+    <div className="flex h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-hidden relative">
       {/* Desktop Left Sidebar */}
       <aside className="hidden lg:flex w-64 flex-col justify-between border-r border-[#EAEAE2] bg-white px-6 py-8 z-30 shrink-0">
         <div>
-          <Link href="/" className="font-serif text-2xl font-bold text-[#4B7355]">
-            Skills<span className="text-[#E29D38]">bridge</span>
-          </Link>
+          <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/logo.png"
+            alt="SkillBridge Logo"
+            width={130}
+            height={35}
+            priority
+            className="h-12 w-auto object-contain"
+          />
+        </Link>
 
           <nav className="mt-12 space-y-2">
-            <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Dashboard" />
-            <SidebarLink href="/explore" icon={Compass} label="Explore" active />
+            <SidebarLink
+              href="/dashboard"
+              icon={LayoutDashboard}
+              label="Dashboard"
+            />
+            <SidebarLink
+              href="/explore"
+              icon={Compass}
+              label="Explore"
+              active
+            />
             <SidebarLink href="/saved" icon={Bookmark} label="Saved" />
             <SidebarLink href="/roadmap" icon={Map} label="Roadmap" />
-            <SidebarLink href="/chat" icon={MessageCircle} label="AI Advisor" />
+            <SidebarLink
+              href="/chat"
+              icon={MessageCircle}
+              label="AI Advisor"
+              badge={
+                <span className="ml-auto flex items-center gap-1 rounded-md bg-[#FBF0D9] px-2 py-0.5 text-[10px] font-bold text-[#C88A2B]">
+                  <Sparkles className="h-3 w-3" /> PRO
+                </span>
+              }
+            />
             <SidebarLink href="/profile" icon={User} label="Profile" />
           </nav>
         </div>
@@ -90,12 +117,23 @@ export default function ExploreClientContent({
               <Menu className="h-6 w-6" />
             </button>
 
-            <Link href="/" className="font-serif text-xl font-bold text-[#4B7355]">
-              Skills<span className="text-[#E29D38]">bridge</span>
-            </Link>
+            <Link href="/" className="flex items-center gap-2">
+                        <Image
+                          src="/logo.png"
+                          alt="SkillBridge Logo"
+                          width={130}
+                          height={35}
+                          priority
+                          className="h-12 w-auto object-contain"
+                        />
+                      </Link>
           </div>
 
-          <form method="GET" action="/explore" className="hidden lg:block relative w-full max-w-md">
+          <form
+            method="GET"
+            action="/explore"
+            className="hidden lg:block relative w-full max-w-md"
+          >
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999]" />
             <input
               type="text"
@@ -104,7 +142,9 @@ export default function ExploreClientContent({
               placeholder="Search title, organization, skills..."
               className="w-full rounded-full bg-[#F4F4EE] py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] placeholder-[#999] outline-none focus:ring-2 focus:ring-[#4B7355]/20"
             />
-            {selectedCategory !== "All" && <input type="hidden" name="category" value={selectedCategory} />}
+            {selectedCategory !== "All" && (
+              <input type="hidden" name="category" value={selectedCategory} />
+            )}
           </form>
 
           <div className="flex items-center gap-4 sm:gap-6">
@@ -126,7 +166,8 @@ export default function ExploreClientContent({
                   {firstName} {lastName}
                 </p>
                 <p className="text-xs text-[#888]">
-                  {profile?.education_level || "Undergraduate"} • {profile?.field_of_study || "CS"}
+                  {profile?.education_level || "Undergraduate"} •{" "}
+                  {profile?.field_of_study || "CS"}
                 </p>
               </div>
             </div>
@@ -140,11 +181,16 @@ export default function ExploreClientContent({
               Explore Opportunities
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-[#666]">
-              Discover curated internships, roles, and programs tailored to your skills and goals.
+              Discover curated internships, roles, and programs tailored to your
+              skills and goals.
             </p>
           </section>
 
-          <form method="GET" action="/explore" className="block lg:hidden relative w-full mb-6">
+          <form
+            method="GET"
+            action="/explore"
+            className="block lg:hidden relative w-full mb-6"
+          >
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999]" />
             <input
               type="text"
@@ -153,7 +199,9 @@ export default function ExploreClientContent({
               placeholder="Search opportunities..."
               className="w-full rounded-2xl bg-white border border-[#EBEBE3] py-3 pl-10 pr-4 text-sm text-[#1A1A1A] placeholder-[#999] outline-none focus:ring-2 focus:ring-[#4B7355]/20 shadow-sm"
             />
-            {selectedCategory !== "All" && <input type="hidden" name="category" value={selectedCategory} />}
+            {selectedCategory !== "All" && (
+              <input type="hidden" name="category" value={selectedCategory} />
+            )}
           </form>
 
           {/* Category / Role Filter Pills */}
@@ -188,9 +236,12 @@ export default function ExploreClientContent({
           {/* Opportunities Grid */}
           {!opportunities || opportunities.length === 0 ? (
             <div className="rounded-3xl border border-[#EBEBE3] bg-white p-12 text-center shadow-sm">
-              <h3 className="font-serif text-lg font-semibold text-[#1A1A1A]">No opportunities found</h3>
+              <h3 className="font-serif text-lg font-semibold text-[#1A1A1A]">
+                No opportunities found
+              </h3>
               <p className="mt-1 text-xs text-[#666]">
-                Try adjusting your search query or role filters to find matching listings.
+                Try adjusting your search query or role filters to find matching
+                listings.
               </p>
               <Link
                 href="/explore"
@@ -204,13 +255,19 @@ export default function ExploreClientContent({
               {opportunities.map((opp) => {
                 let formattedDeadline = "Open";
                 if (opp.deadline) {
-                  const [year, month, day] = opp.deadline.split("-").map(Number);
+                  const [year, month, day] = opp.deadline
+                    .split("-")
+                    .map(Number);
                   if (year && month && day) {
                     const dateObj = new Date(year, month - 1, day);
                     const diffDays = Math.ceil(
-                      (dateObj.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+                      (dateObj.getTime() - new Date().getTime()) /
+                        (1000 * 60 * 60 * 24),
                     );
-                    formattedDeadline = diffDays > 0 ? `${diffDays} days left` : "Deadline Passed";
+                    formattedDeadline =
+                      diffDays > 0
+                        ? `${diffDays} days left`
+                        : "Deadline Passed";
                   }
                 }
 
@@ -234,7 +291,10 @@ export default function ExploreClientContent({
                       </div>
 
                       <h2 className="mt-4 font-serif text-lg sm:text-xl font-bold text-[#1A1A1A] leading-snug">
-                        <Link href={`/explore/${opp.id}`} className="hover:text-[#4B7355] transition">
+                        <Link
+                          href={`/explore/${opp.id}`}
+                          className="hover:text-[#4B7355] transition"
+                        >
                           {opp.title}
                         </Link>
                       </h2>
@@ -243,7 +303,8 @@ export default function ExploreClientContent({
                       </p>
 
                       <p className="mt-3 text-xs leading-relaxed text-[#555] line-clamp-2">
-                        {opp.description || "No description provided for this listing."}
+                        {opp.description ||
+                          "No description provided for this listing."}
                       </p>
                     </div>
 
@@ -290,7 +351,8 @@ export default function ExploreClientContent({
                           {firstName} {lastName}
                         </p>
                         <p className="text-xs text-[#888]">
-                          {profile?.education_level || "Undergraduate"} • {profile?.field_of_study || "CS"}
+                          {profile?.education_level || "Undergraduate"} •{" "}
+                          {profile?.field_of_study || "CS"}
                         </p>
                       </div>
                     </div>
@@ -304,11 +366,24 @@ export default function ExploreClientContent({
 
                   {/* Sidebar Navigation Items */}
                   <nav className="mt-6 space-y-2">
-                    <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Dashboard" />
-                    <SidebarLink href="/explore" icon={Compass} label="Explore" active />
+                    <SidebarLink
+                      href="/dashboard"
+                      icon={LayoutDashboard}
+                      label="Dashboard"
+                    />
+                    <SidebarLink
+                      href="/explore"
+                      icon={Compass}
+                      label="Explore"
+                      active
+                    />
                     <SidebarLink href="/saved" icon={Bookmark} label="Saved" />
                     <SidebarLink href="/roadmap" icon={Map} label="Roadmap" />
-                    <SidebarLink href="/chat" icon={MessageCircle} label="AI Advisor" />
+                    <SidebarLink
+                      href="/chat"
+                      icon={MessageCircle}
+                      label="AI Advisor"
+                    />
                     <SidebarLink href="/profile" icon={User} label="Profile" />
                   </nav>
                 </div>
@@ -340,10 +415,12 @@ export default function ExploreClientContent({
 
             <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
               <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-l border-[#EAEAE2]">
-                <div className="flex items-center justify-between px-6 py-5 border-b border-[#EAEAE2] bg-[#F7F7F2]/50">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-[#EAEAE2] bg-[#FAFAF0]/50">
                   <div className="flex items-center gap-2">
                     <Bell className="h-5 w-5 text-[#4B7355]" />
-                    <h2 className="font-serif text-lg font-bold text-[#1A1A1A]">Notifications</h2>
+                    <h2 className="font-serif text-lg font-bold text-[#1A1A1A]">
+                      Notifications
+                    </h2>
                   </div>
                   <button
                     onClick={() => setIsNotificationsOpen(false)}
@@ -368,7 +445,7 @@ export default function ExploreClientContent({
                   />
                 </div>
 
-                <div className="p-4 border-t border-[#EAEAE2] bg-[#F7F7F2]/30 text-center">
+                <div className="p-4 border-t border-[#EAEAE2] bg-[#FAFAF0]/30 text-center">
                   <Link
                     href="/notifications"
                     onClick={() => setIsNotificationsOpen(false)}
@@ -386,32 +463,65 @@ export default function ExploreClientContent({
   );
 }
 
-function NotificationItem({ title, description, time, type }: { title: string; description: string; time: string; type: 'success' | 'info' | 'alert' }) {
+function NotificationItem({
+  title,
+  description,
+  time,
+  type,
+}: {
+  title: string;
+  description: string;
+  time: string;
+  type: "success" | "info" | "alert";
+}) {
   return (
     <div className="p-4 rounded-2xl border border-[#EBEBE3] bg-[#F9F9F5] flex gap-3 items-start transition hover:border-[#4B7355]/30">
-      {type === 'success' && <CheckCircle className="h-5 w-5 text-[#4B7355] shrink-0 mt-0.5" />}
-      {type === 'info' && <Bell className="h-5 w-5 text-[#C88A2B] shrink-0 mt-0.5" />}
-      {type === 'alert' && <AlertCircle className="h-5 w-5 text-[#D9534F] shrink-0 mt-0.5" />}
-      
+      {type === "success" && (
+        <CheckCircle className="h-5 w-5 text-[#4B7355] shrink-0 mt-0.5" />
+      )}
+      {type === "info" && (
+        <Bell className="h-5 w-5 text-[#C88A2B] shrink-0 mt-0.5" />
+      )}
+      {type === "alert" && (
+        <AlertCircle className="h-5 w-5 text-[#D9534F] shrink-0 mt-0.5" />
+      )}
+
       <div className="flex-1">
         <h4 className="text-xs font-semibold text-[#1A1A1A]">{title}</h4>
-        <p className="mt-1 text-xs text-[#666] leading-relaxed">{description}</p>
+        <p className="mt-1 text-xs text-[#666] leading-relaxed">
+          {description}
+        </p>
         <span className="mt-2 block text-[10px] text-[#999]">{time}</span>
       </div>
     </div>
   );
 }
 
-function SidebarLink({ href, icon: Icon, label, active }: { href: string; icon: LucideIcon; label: string; active?: boolean }) {
+function SidebarLink({
+  href,
+  icon: Icon,
+  label,
+  active,
+  badge,
+}: {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  active?: boolean;
+  badge?: React.ReactNode;
+}) {
   return (
     <Link
       href={href}
       className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-medium transition ${
-        active ? "bg-[#F4F7F4] text-[#4B7355]" : "text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A]"
+        active
+          ? "bg-[#F4F7F4] text-[#4B7355]"
+          : "text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A]"
       }`}
     >
       <Icon className="h-5 w-5" />
       {label}
+      {badge && <span className="ml-auto">{badge}</span>}
     </Link>
   );
 }

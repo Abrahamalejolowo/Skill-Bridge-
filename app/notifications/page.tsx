@@ -16,6 +16,15 @@ export default async function NotificationsPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
+  // Optional: check user role or default to a standard dashboard path
+  // If you store user roles in a profiles table, you can route them accordingly, 
+  // or use a safe default dashboard link:
+  const dashboardPath = '/dashboard' 
 
-  return <NotificationsClient initialNotifications={notifications || []} />
+  return (
+    <NotificationsClient 
+      initialNotifications={notifications || []} 
+      dashboardPath={dashboardPath} 
+    />
+  )
 }

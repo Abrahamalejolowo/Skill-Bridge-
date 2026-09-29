@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { isUserPremium } from '@/lib/subscription'
 
 export async function createChat(
   opportunityId?: string,
@@ -59,6 +60,18 @@ export async function getChatSessions() {
     sessions: data || [],
     error: error?.message,
   }
+}
+
+export async function getPremiumStatus() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return { isPremium: false }
+
+  const premium = await isUserPremium(user.id)
+  return { isPremium: premium }
 }
 
 export async function getChatMessages(chatId: string) {
@@ -218,7 +231,12 @@ export async function getAIResponse(
   userMessage: string,
   chatId: string,
   opportunityTitle?: string
-) {
+): Promise<{
+  success?: boolean
+  message?: string
+  error?: string
+  premiumRequired?: boolean
+}> {
   const supabase = await createClient()
 
   const {
@@ -227,6 +245,17 @@ export async function getAIResponse(
 
   if (!user) {
     return { error: 'Not authenticated' }
+  }
+
+  // 1. Verify if the user has an active monthly subscription
+  const isPremium = await isUserPremium(user.id)
+  
+  // 2. Gate the AI chat if the user is not subscribed
+  if (!isPremium) {
+    return {
+      premiumRequired: true,
+      error: 'An active monthly subscription is required to use the AI Advisor.',
+    }
   }
 
   try {
