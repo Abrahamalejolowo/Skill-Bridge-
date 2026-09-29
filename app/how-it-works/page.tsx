@@ -56,9 +56,9 @@ export default function HowItWorksPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <main className="min-h-screen bg-bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-x-hidden">
+    <main className="min-h-screen bg-[#FAFAF0] text-[#1A1A1A] font-sans antialiased overflow-x-hidden">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 border-b border-[#EBEBE3] bg-white">
+      <header className="sticky top-0 z-50 border-b border-[#EBEBE3] bg-[#FAFAF0]">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
           <Link href="/" className="flex items-center gap-2">
             <Image
