@@ -8,7 +8,6 @@ export const metadata: Metadata = {
   generator: 'Skillbridge',
   icons: {
     icon: '/favicon.svg',
-    apple: '/apple-icon.png',
   },
 }
 

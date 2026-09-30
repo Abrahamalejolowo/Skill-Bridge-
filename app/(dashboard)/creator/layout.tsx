@@ -114,7 +114,7 @@ export default function CreatorLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-background overflow-hidden">
+    <div className="flex min-h-screen bg-background overflow-hidden relative">
       <Sidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -122,12 +122,13 @@ export default function CreatorLayout({
         onAnalyticsClick={handleAnalyticsClick}
       />
 
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto">
-        <header className="h-[72px] bg-[#FAFAF0] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-50 shrink-0 shadow-sm border-b border-border/40">
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative">
+        {/* Header z-index is set to 30 so it sits under the sidebar (z-50) */}
+        <header className="h-[72px] bg-[#FAFAF0] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0 shadow-sm border-b border-border/40">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden p-2 rounded-lg bg-muted border border-border text-foreground"
+              className="md:hidden p-2 rounded-lg bg-muted border border-border text-foreground relative z-40"
               aria-label="Toggle menu"
             >
               {sidebarOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -145,13 +146,14 @@ export default function CreatorLayout({
           </div>
 
           <div className="flex items-center gap-5">
-            <button
+            <Link
+            href="/notifications"
               className="relative text-muted-foreground hover:text-foreground transition"
               aria-label="Notifications"
             >
               <Bell className="size-5" />
-              <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-destructive" />
-            </button>
+             
+            </Link>
 
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shrink-0">
@@ -168,7 +170,7 @@ export default function CreatorLayout({
         <main className="relative flex-1">
           {sidebarOpen && (
             <div
-              className="fixed inset-0 bg-black/50 z-20 md:hidden"
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 md:hidden"
               onClick={() => setSidebarOpen(false)}
             />
           )}
