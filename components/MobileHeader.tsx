@@ -15,19 +15,22 @@ import {
   User, 
   LogOut,
   MessageCircle,
-  Bell
+  Bell,
+  Sparkles
 } from 'lucide-react'
 
 interface MobileHeaderProps {
   initials?: string
   showNotificationIcon?: boolean
   onNotificationClick?: () => void
+  onAIAdvisorClick?: () => void
 }
 
 export default function MobileHeader({ 
   initials = 'AC', 
   showNotificationIcon = true,
-  onNotificationClick 
+  onNotificationClick,
+  onAIAdvisorClick
 }: MobileHeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
@@ -126,7 +129,29 @@ export default function MobileHeader({
                 <MobileNavLink href="/explore" icon={Compass} label="Explore" onClick={() => setIsOpen(false)} />
                 <MobileNavLink href="/saved" icon={Bookmark} label="Saved" onClick={() => setIsOpen(false)} />
                 <MobileNavLink href="/roadmap" icon={Map} label="Roadmap" onClick={() => setIsOpen(false)} />
-                <MobileNavLink href="/chat" icon={MessageCircle} label="AI Advisor" onClick={() => setIsOpen(false)} />
+                
+                {/* AI Advisor with PRO Badge */}
+                <button
+                  onClick={() => {
+                    setIsOpen(false)
+                    if (onAIAdvisorClick) {
+                      onAIAdvisorClick()
+                    } else {
+                      router.push('/chat')
+                    }
+                  }}
+                  className="w-full flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-[#666] hover:bg-[#F5F5EF] hover:text-[#1A1A1A] transition group cursor-pointer"
+                >
+                  <span className="flex items-center gap-3.5">
+                    <MessageCircle className="h-5 w-5 text-[#888]" />
+                    <span>AI Advisor</span>
+                  </span>
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[10px] font-bold border border-amber-500/20">
+                    <Sparkles className="size-3" />
+                    PRO
+                  </span>
+                </button>
+
                 <MobileNavLink href="/profile" icon={User} label="Profile" onClick={() => setIsOpen(false)} />
               </nav>
             </div>
