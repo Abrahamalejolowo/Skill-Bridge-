@@ -5,8 +5,9 @@ import { useRouter, usePathname } from 'next/navigation'
 import { Menu, X, Bell, Sparkles, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Sidebar } from '@/components/creator/sidebar'
+import { getPremiumStatus } from '@/app/actions/chat'
 import Image from 'next/image'
-import Link from "next/link";
+import Link from 'next/link'
 
 function getInitials(name: string) {
   return (
@@ -30,7 +31,8 @@ export default function CreatorLayout({
   const [orgName, setOrgName] = useState('')
   const [email, setEmail] = useState('')
   const [showPremiumModal, setShowPremiumModal] = useState(false)
-  
+  const [isPremium, setIsPremium] = useState(false)
+
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
@@ -77,6 +79,10 @@ export default function CreatorLayout({
       }
 
       setOrgName(creator.organization_name)
+
+      const premiumStatus = await getPremiumStatus()
+      setIsPremium(premiumStatus.isPremium)
+
       setLoading(false)
     } catch (error) {
       console.error('Auth error:', error)
@@ -120,6 +126,7 @@ export default function CreatorLayout({
         setSidebarOpen={setSidebarOpen}
         onLogout={handleLogout}
         onAnalyticsClick={handleAnalyticsClick}
+        isPremium={isPremium}
       />
 
       <div className="flex-1 flex flex-col h-screen overflow-y-auto relative">
@@ -147,12 +154,11 @@ export default function CreatorLayout({
 
           <div className="flex items-center gap-5">
             <Link
-            href="/notifications"
+              href="/notifications"
               className="relative text-muted-foreground hover:text-foreground transition"
               aria-label="Notifications"
             >
               <Bell className="size-5" />
-             
             </Link>
 
             <div className="flex items-center gap-3">
@@ -181,7 +187,7 @@ export default function CreatorLayout({
       {/* Premium Upgrade Modal Popup */}
       {showPremiumModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={() => setShowPremiumModal(false)}
           />

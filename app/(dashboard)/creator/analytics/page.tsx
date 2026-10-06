@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { FileText, Mail, Star, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { getPremiumStatus } from '@/app/actions/chat'
+import PremiumUpsell from '@/components/PremiumUpsell'
 
 type Status = 'pending' | 'reviewing' | 'accepted' | 'rejected'
 
@@ -43,6 +45,7 @@ export default function AnalyticsPage() {
   const [opps, setOpps] = useState<OppRow[]>([])
   const [apps, setApps] = useState<AppRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [isPremium, setIsPremium] = useState<boolean | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -56,6 +59,14 @@ export default function AnalyticsPage() {
         data: { user },
       } = await supabase.auth.getUser()
       if (!user) return
+
+      const premiumStatus = await getPremiumStatus()
+      setIsPremium(premiumStatus.isPremium)
+
+      if (!premiumStatus.isPremium) {
+        setLoading(false)
+        return
+      }
 
       const { data: oppData, error: oppError } = await supabase
         .from('opportunities')
@@ -140,6 +151,14 @@ export default function AnalyticsPage() {
     return (
       <div className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto flex items-center justify-center min-h-[70vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    )
+  }
+
+  if (isPremium === false) {
+    return (
+      <div className="p-4 sm:p-6 md:p-10 max-w-2xl mx-auto">
+        <PremiumUpsell />
       </div>
     )
   }

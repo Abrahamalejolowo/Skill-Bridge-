@@ -20,9 +20,16 @@ interface SidebarProps {
   setSidebarOpen: (open: boolean) => void
   onLogout: () => void
   onAnalyticsClick: () => void
+  isPremium: boolean
 }
 
-export function Sidebar({ sidebarOpen, setSidebarOpen, onLogout, onAnalyticsClick }: SidebarProps) {
+export function Sidebar({
+  sidebarOpen,
+  setSidebarOpen,
+  onLogout,
+  onAnalyticsClick,
+  isPremium,
+}: SidebarProps) {
   const pathname = usePathname()
 
   const navItems = [
@@ -89,7 +96,8 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, onLogout, onAnalyticsClic
             const Icon = item.icon
             const active = isActive(item.href)
 
-            if (item.isPremium) {
+            // Premium-gated item, but only when the creator ISN'T premium
+            if (item.isPremium && !isPremium) {
               return (
                 <button
                   key={item.href}
