@@ -337,7 +337,7 @@ Format your response using structured Markdown:
 
     // Use retry logic for API call
     const response = await fetchWithRetry(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent',
       {
         method: 'POST',
         headers: {
